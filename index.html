@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="grammar/variables.js"></script>
+		<script src="grammar/dictionary.js"></script>
+		<script src="grammar/commands.js"></script>
+	</head>
+	<body>
+	<script>
+	
+	var s = new Scope("global");
+	s.addVariable(new MutexVariable("mu"));	
+	s.addVariable(new IntVariable("x", 5));
+	s.addVariable(new StringVariable("y", 10));
+	s.addCommand(new CommandLockMutex(s.getVariableByName("mu")));
+	s.addCommand(new CommandAssignValue(s.getVariableByName("x"), 10));
+	s.executeCommand(0);
+	s.executeCommand(1);
+	console.log(s);
+
+    </script>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+mutex mu
+
+
+int ff()
+{
+	int count = 0
+
+	mu.lock()
+	count = count + 1
+	mu.unlock()
+	return count
+}
+int main()
+{
+	thread t[100]
+
+	for (int i = 0 ; i < 5; i = i + 1)
+	{
+		t[i] = thread(ff)
+	}
+
+	for (int i = 0 ; i < 5; i = i + 1)
+	{
+		t[i].join()
+	}
+
+
+}
