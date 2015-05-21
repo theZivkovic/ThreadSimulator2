@@ -1,4 +1,5 @@
 var AST = require("./ast");
+var format = require('string-format');
 
 function Instruction(name, args)
 {
@@ -20,9 +21,21 @@ function TSAbstractSyntaxTreeParser(tree)
 	this.instructions = [];
 }
 
-TSAbstractSyntaxTreeParser.prototype.generateCodeForCalculation = function(expression)
+TSAbstractSyntaxTreeParser.prototype.generateCodeForCalculation = function(expression, n)
 {
-	
+	if (expression.getType() == "TSInteger" || expression.getType() == "TSDouble" || expression.getType() == "TSBool")
+	{
+		this.instructions.push(new Instruction("setTempValue", ["global", "$"+n , expression.value]));
+		return n;
+	}
+	else if (expression.getType() == "TSBinaryOperation")
+	{
+		var first = this.generateCodeForCalculation(expression.firstOperand, 2*n + 1);
+		var second = this.generateCodeForCalculation(expression.secondOperand, 2*n + 2);
+
+		this.instructions.push(new Instruction("setTempValue", ["global", "$" + n, format("${0} {1} ${2}", first, expression.operation, second)]));
+		return n;
+	}
 }
 TSAbstractSyntaxTreeParser.prototype.parse = function()
 {
@@ -70,13 +83,14 @@ TSAbstractSyntaxTreeParser.prototype.parse = function()
 
 				if (expression != null)
 				{
-					
+					this.generateCodeForCalculation(expression, 0);
 				}
 
 				this.instructions.push(new Instruction("addVariable", [
 																		"global",
 																		currentStatement.type,
-																		currentStatement.identifier	
+																		currentStatement.identifier,
+																		 "$0"	
 																	  ]));
 				break;
 			}

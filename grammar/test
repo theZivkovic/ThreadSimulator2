@@ -1,4 +1,4 @@
-int x = 8 * 2 + 3 * 4 + 5
+int x = 2 + 4 * 3
 int y
 int z = 4
 
