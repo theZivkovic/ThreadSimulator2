@@ -1,28 +1,24 @@
 mutex mu
 
-
-int ff()
+int func(int a, int b)
 {
-	int count = 0
-
 	mu.lock()
-	count = count + 1
+		int x = a
+		int y = b
 	mu.unlock()
-	return count
+	
+	return x + y * 2
 }
-int main()
+
+int main(int argc, int argv)
 {
 	thread t[100]
 
-	for (int i = 0 ; i < 5; i = i + 1)
+	for (int i = 0; i < 10; i = i + 1)
 	{
-		t[i] = thread(ff)
+		int x
+
+		x = x + 2
 	}
-
-	for (int i = 0 ; i < 5; i = i + 1)
-	{
-		t[i].join()
-	}
-
-
+	t[i].join()
 }

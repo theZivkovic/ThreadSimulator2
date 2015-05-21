@@ -1,4 +1,5 @@
 var format = require('string-format');
+var HELPER = require('./helper');
 
 /*=============================================*/
 /*
@@ -9,6 +10,7 @@ function TSNode()
 {
 
 }
+
 /*=============================================*/
 /*
 /* 			TSExpression
@@ -26,6 +28,10 @@ TSExpression.prototype.getType = function()
 TSExpression.prototype.toString = function()
 {
 	return "TSExpression";
+}
+TSExpression.prototype.printDetails = function(level)
+{
+	return "";
 }
 /*=============================================*/
 /*
@@ -45,6 +51,10 @@ TSStatement.prototype.toString = function()
 {
 	return "TSStatement";
 }
+TSStatement.prototype.printDetails = function(level)
+{
+	return "";
+}
 /*=============================================*/
 /*
 /* 			TSInteger
@@ -61,9 +71,12 @@ TSInteger.prototype.getType = function()
 }
 TSInteger.prototype.toString = function()
 {
-	return format("[TSInteger: {0}]\n", this.value);
+	return "TSInteger";
 }
-
+TSInteger.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSInteger] {0} [/TSInteger]", this.value)));
+}
 /*=============================================*/
 /*
 /* 			TSDouble
@@ -80,9 +93,12 @@ TSDouble.prototype.getType = function()
 }
 TSDouble.prototype.toString = function()
 {
-	return format("[TSDouble: {0}]\n", this.value);
+	return "TSDouble";
 }
-
+TSDouble.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSDouble] {0} [/TSDouble]", this.value)));
+}
 /*=============================================*/
 /*
 /* 			TSBool
@@ -99,9 +115,12 @@ TSBool.prototype.getType = function()
 }
 TSBool.prototype.toString = function()
 {
-	return format("[TSBool: {0}]\n", this.value);
+	return "TSBool";
 }
-
+TSBool.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSBool] {0} [/TSBool]", this.value)));
+}
 /*=============================================*/
 /*
 /* 			TSString
@@ -118,9 +137,12 @@ TSString.prototype.getType = function()
 }
 TSString.prototype.toString = function()
 {
-	return format("[TSString: {0}]\n", this.value);
+	return "TSString";
 }
-
+TSString.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSString] {0} [/TSString]", this.value)));
+}
 /*=============================================*/
 /*
 /* 			TSObject
@@ -137,7 +159,11 @@ TSObject.prototype.getType = function()
 }
 TSObject.prototype.toString = function()
 {
-	return format("[TSObject: {0}]\n", this.type);
+	return "TSObject";
+}
+TSObject.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSObject] {0} [/TSObject]", this.type)));
 }
 /*==============================================================*/
 /*
@@ -155,9 +181,12 @@ TSIdentifier.prototype.getType = function()
 }
 TSIdentifier.prototype.toString = function()
 {
-	return format("[TSIdentifier: {0}]\n", this.name);
+	return "TSIdentifier";
 }
-
+TSIdentifier.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSIdentifier] {0} [/TSIdentifier]", this.name)));
+}
 /*==============================================================*/
 /*
 /* 			TSArrayIdentifier
@@ -175,7 +204,11 @@ TSArrayIdentifier.prototype.getType = function()
 }
 TSArrayIdentifier.prototype.toString = function()
 {
-	return format("[TSArrayIdentifier: {0}[{1}]]\n", this.name, this.index);
+	return "TSArrayIdentifier";
+}
+TSArrayIdentifier.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSIdentifier] {0}[{1}] [/TSIdentifier]", this.name, this.index)));
 }
 /*==============================================================*/
 /*
@@ -195,7 +228,14 @@ TSBinaryOperation.prototype.getType = function()
 }
 TSBinaryOperation.prototype.toString = function()
 {
-	return format("[TSBinaryOperation:\n{0} {1} {2}]\n", this.firstOperand, this.operation, this.secondOperand);
+	return "TSBinaryOperation";
+}
+TSBinaryOperation.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSBinaryOperation {0}]", this.operation)));
+		this.firstOperand.printDetails(level + 1);
+		this.secondOperand.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSBinaryOperation]"));
 }
 /*==============================================================*/
 /*
@@ -213,17 +253,17 @@ TSBlock.prototype.getType = function()
 }
 TSBlock.prototype.toString = function()
 {
-	var str = "[TSBlock:\n";
-
-	for (var i = 0 ; i < this.statements.length; i++)
-	{
-		str += this.statements[i].toString() + "\n";
-	}
-
-	str += "]\n";
-	return str;
+	return "TSBlock";
 }
-
+TSBlock.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, "[TSBlock]"));
+	for (var i = 0; i < this.statements.length; i++)
+	{
+		this.statements[i].printDetails(level+1);
+	}
+	console.log(HELPER.indentString(level, "[/TSBlock]"));
+}
 /*==============================================================*/
 /*
 /* 			TSAssignment
@@ -242,7 +282,13 @@ TSAssignment.prototype.getType = function()
 }
 TSAssignment.prototype.toString = function()
 {
-	return format("[TSAssignment:\n{0} = {1}]\n", this.name, this.expression);
+	return "TSAssignment";
+}
+TSAssignment.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSAssignment] {0} -> ", this.name)));
+		this.expression.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSAssignment]")); 
 }
 
 /*==============================================================*/
@@ -263,17 +309,17 @@ TSFunctionCall.prototype.getType = function()
 }
 TSFunctionCall.prototype.toString = function()
 {
-	var str = "[TSFunctionCall \n";
-
+	return "TSFunctionCall";
+}
+TSFunctionCall.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSFunctionCall] {0} ", this.name)));
 	for (var i = 0 ; i < this.arguments.length; i++)
 	{
-		str += this.arguments[i].toString() + "\n";
+		this.arguments[i].printDetails(level + 1);
 	}
-
-	str += "]";
-	return str;
+	console.log(HELPER.indentString(level, "[/TSFunctionCall]")); 
 }
-
 /*==============================================================*/
 /*
 /* 			TSFunctionDeclaration
@@ -294,15 +340,21 @@ TSFunctionDeclaration.prototype.getType = function()
 }
 TSFunctionDeclaration.prototype.toString = function()
 {	
-	var str;
-
-	str = format("[TSFunctionDeclaration : {0} {1} ({2})", this.type, this.identifier, this.arguments) + "{\n";
-	str+= this.block.toString();
-	str+= "}\n";
-
-	return str;
+	return "TSFunctionDeclaration";
 }
-
+TSFunctionDeclaration.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSFunctionDeclaration] {0} {1} ", this.type, this.identifier)));
+		console.log(HELPER.indentString(level + 1, "[arguments]"));
+			for (var i = 0; i < this.arguments.length; i++)
+			{
+				this.arguments[i].printDetails(level + 2);
+			}
+		console.log(HELPER.indentString(level + 1, "[/arguments]"));
+		
+		this.block.printDetails(level + 1);		
+	console.log(HELPER.indentString(level, "[/TSFunctionDeclaration]")); 
+}
 /*==============================================================*/
 /*
 /* 			TSVariableDeclaration
@@ -322,9 +374,17 @@ TSVariableDeclaration.prototype.getType = function()
 }
 TSVariableDeclaration.prototype.toString = function()
 {	
-	return format("[TSVariableDeclaration : {0} {1}  = {2}]", this.type, this.identifier, this.expression || "none");
+	return "TSVariableDeclaration";
 }
-
+TSVariableDeclaration.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSVariableDeclaration] {0} {1} -> ", this.type, this.identifier)));
+		if (this.expression != undefined)
+		{
+			this.expression.printDetails(level + 1);
+		}
+	console.log(HELPER.indentString(level, "[/TSVariableDeclaration]"));	
+}
 /*==============================================================*/
 /*
 /* 			TSArrayDeclaration
@@ -344,7 +404,12 @@ TSArrayVariableDeclaration.prototype.getType = function()
 }
 TSArrayVariableDeclaration.prototype.toString = function()
 {	
-	return format("[TSArrayVariableDeclaration : {0} {1}  = {2}]", this.type, this.identifier, this.size);
+	return "TSArrayVariableDeclaration";
+}
+TSArrayVariableDeclaration.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSArrayVariableDeclaration] {0} {1} [{2}] [/TSArrayVariableDeclaration]", 
+		this.type, this.identifier, this.size)));	
 }
 
 /*==============================================================*/
@@ -364,8 +429,15 @@ TSExpressionStatement.prototype.getType = function()
 }
 TSExpressionStatement.prototype.toString = function()
 {	
-	return format("[TSExpressionStatement : {0}]", this.expression);
+	return "TSExpressionStatement";
 }
+TSExpressionStatement.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, "[TSExpressionStatement]"));
+		this.expression.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSAssignment]"));
+}
+ 
 
 /*==============================================================*/
 /*
@@ -385,6 +457,12 @@ TSReturnStatement.prototype.getType = function()
 TSReturnStatement.prototype.toString = function()
 {	
 	return format("[TSReturnStatement: {0}]", this.expression);
+}
+TSReturnStatement.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, "[TSReturnStatement]"));
+		this.expression.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSReturnStatement]"));
 }
 
 /*==============================================================*/
@@ -406,18 +484,26 @@ TSMethodCall.prototype.getType = function()
 }
 TSMethodCall.prototype.toString = function()
 {
-	var str = format("[TSMethodCall - {0} on {1}\n", this.methodName, this.identifier);
+	return "TSMethodCall";
+}
+TSMethodCall.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSMethodCall {0}]", this.methodName)));
 
-	if (this.arguments != null)
-	{
-		for (var i = 0 ; i < this.arguments.length; i++)
-		{
-			str += this.arguments[i].toString() + "\n";
-		}
-	}
-
-	str += "]";
-	return str;
+		this.identifier.printDetails(level + 1);
+	
+		console.log(HELPER.indentString(level + 1, "[arguments]"));
+			
+			if (this.arguments != null)
+			{
+				for (var i = 0; i < this.arguments.length; i++)
+				{
+					this.arguments[i].printDetails(level + 2);
+				}
+			}
+		console.log(HELPER.indentString(level + 1, "[/arguments]"));
+		
+	console.log(HELPER.indentString(level, "[/TSMethodCall]"));
 }
 
 /*==============================================================*/
@@ -438,7 +524,11 @@ TSMakeThread.prototype.getType = function()
 }
 TSMakeThread.prototype.toString = function()
 {	
-	return format("[TSMakeThread: {0} with {1}]", this.identifier, this.func);
+	return "TSMakeThread";
+}
+TSMakeThread.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, format("[TSMakeThread] {0} {1} [/TSMakeThread]"), this.identifier, this.func));
 }
 
 /*==============================================================*/
@@ -461,16 +551,28 @@ TSForLoop.prototype.getType = function()
 }
 TSForLoop.prototype.toString = function()
 {	
-	var str = "[TSForLoop: \n";
-
-	str += this.initStatements + "\n";
-	str += this.endExpression + "\n";
-	str += this.stepStatements + "\n";
-
-	str += this.body + "\n";
-
-	str += "]\n";
-	return str;
+	return "TSForLoop";
+}
+TSForLoop.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, "[TSForLoop]"));
+		console.log(HELPER.indentString(level + 1, "[init]"));
+			for (var i = 0 ; i < this.initStatements.length; i++)
+			{
+				this.initStatements[i].printDetails(level + 2);
+			}
+		console.log(HELPER.indentString(level + 1, "[/init]"));	
+		console.log(HELPER.indentString(level + 1, "[end]"));
+			this.endExpression.printDetails(level + 2);
+		console.log(HELPER.indentString(level + 1, "[/end]"));
+		console.log(HELPER.indentString(level + 1, "[step]"));
+			for (var i = 0 ; i < this.stepStatements.length; i++)
+			{
+				this.stepStatements[i].printDetails(level + 2);
+			}
+		console.log(HELPER.indentString(level + 1, "[/step]"));
+		this.body.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSForLoop]"));		
 }
 
 /*==============================================================*/

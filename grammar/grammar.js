@@ -86,7 +86,7 @@ switch (yystate) {
 case 1:
 
 		greatBlock = $$[$0-1];
-		console.log(greatBlock.toString());
+		greatBlock.printDetails(0);
 	
 break;
 case 2:
@@ -235,12 +235,22 @@ case 40:
 		this.$ = new AST.TSBlock([]);
 	
 break;
-case 46: case 48:
+case 46:
+
+		this.$ = new AST.TSMethodCall(new AST.TSIdentifier($$[$0-5]), $$[$0-3], $$[$0-1]);
+	
+break;
+case 47:
+
+		this.$ = new AST.TSMethodCall(new AST.TSIdentifier($$[$0-4]), $$[$0-2], null);
+	
+break;
+case 48:
 
 		this.$ = new AST.TSMethodCall($$[$0-5], $$[$0-3], $$[$0-1]);
 	
 break;
-case 47: case 49:
+case 49:
 
 		this.$ = new AST.TSMethodCall($$[$0-4], $$[$0-2], null);
 	

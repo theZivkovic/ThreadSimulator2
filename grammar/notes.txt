@@ -1,0 +1,40 @@
+mutex mu
+
+int func(int a, int b)
+{
+	mu.lock()
+		int x = a
+		int y = b
+	mu.unlock()
+
+	return x + y * 2
+}
+
+int main(int argc)
+{
+	thread t[100]
+
+	for (int i = 0; i < 10; i = i + 1)
+	{
+		int x
+
+		x = x + 2
+	}
+	t[i].join()
+}
+
+instructions:
+						    
+1) generateFrame("global", null /* parrent */)   
+2) addVar("global", { type : mutex, name : mu, locked : false})
+3) addFunDecl("global", { retType: int, args: [ int, int ]})
+4) addFuncDecl("global", { retType: int, args : [int ]})
+
+// after this is done, check for main FunDecl
+// if it doesn't exist, throw error
+
+5) generateFrame("main", "global")
+6) 100 x addVar("main", { type : thread, name : t_i /* t_0, t_1, t_2 ... */}, joined : false)
+7) generateFrame("for_0", "main")
+8) addVar("for_0", {type : int, name : i, value: 0})
+9) 

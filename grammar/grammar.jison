@@ -58,7 +58,7 @@ program
 	: statements EOF
 	{
 		greatBlock = $1;
-		console.log(greatBlock.toString());
+		greatBlock.printDetails(0);
 	}
 	;
 
@@ -272,11 +272,11 @@ function_call_args
 method_call
 	: IDENTIFIER DOT IDENTIFIER LBRACKET function_call_args RBRACKET
 	{
-		$$ = new AST.TSMethodCall($1, $3, $5);
+		$$ = new AST.TSMethodCall(new AST.TSIdentifier($1), $3, $5);
 	}
 	| IDENTIFIER DOT IDENTIFIER LBRACKET RBRACKET
 	{
-		$$ = new AST.TSMethodCall($1, $3, null);
+		$$ = new AST.TSMethodCall(new AST.TSIdentifier($1), $3, null);
 	}
 	| array_identifier DOT IDENTIFIER LBRACKET function_call_args RBRACKET
 	{
