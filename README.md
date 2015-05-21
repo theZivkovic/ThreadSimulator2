@@ -2,11 +2,13 @@
 
 For now:
 
-1) cd grammar
+- sudo npm install -g jison
 
-2) jison grammar.jison
+- cd grammar
 
-3) edit test
+- jison grammar.jison
 
-4) node grammar.js test
+- edit test
+
+- node grammar.js test
 
