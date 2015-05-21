@@ -1,0 +1,177 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'install', '-g', 'jison' ]
+2 info using npm@1.3.10
+3 info using node@v0.10.25
+4 verbose cache add [ 'jison', null ]
+5 verbose cache add name=undefined spec="jison" args=["jison",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'jison',
+6 verbose parsed url   path: 'jison',
+6 verbose parsed url   href: 'jison' }
+7 silly lockFile 51a53039-jison jison
+8 verbose lock jison /home/rtrk/.npm/51a53039-jison.lock
+9 silly lockFile 51a53039-jison jison
+10 silly lockFile 51a53039-jison jison
+11 verbose addNamed [ 'jison', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile 21a76936-jison jison@
+14 verbose lock jison@ /home/rtrk/.npm/21a76936-jison.lock
+15 silly addNameRange { name: 'jison', range: '*', hasData: false }
+16 verbose url raw jison
+17 verbose url resolving [ 'https://registry.npmjs.org/', './jison' ]
+18 verbose url resolved https://registry.npmjs.org/jison
+19 info trying registry request attempt 1 at 10:45:48
+20 verbose etag "2LBJTQMKVAQW91WMFQPR5AKE7"
+21 http GET https://registry.npmjs.org/jison
+22 http 304 https://registry.npmjs.org/jison
+23 silly registry.get cb [ 304,
+23 silly registry.get   { date: 'Thu, 21 May 2015 08:45:49 GMT',
+23 silly registry.get     via: '1.1 varnish',
+23 silly registry.get     'cache-control': 'max-age=60',
+23 silly registry.get     etag: '"2LBJTQMKVAQW91WMFQPR5AKE7"',
+23 silly registry.get     age: '48',
+23 silly registry.get     connection: 'keep-alive',
+23 silly registry.get     'x-served-by': 'cache-fra1229-FRA',
+23 silly registry.get     'x-cache': 'HIT',
+23 silly registry.get     'x-cache-hits': '1',
+23 silly registry.get     'x-timer': 'S1432197949.579195,VS0,VE0',
+23 silly registry.get     vary: 'Accept' } ]
+24 verbose etag jison from cache
+25 silly addNameRange number 2 { name: 'jison', range: '*', hasData: true }
+26 silly addNameRange versions [ 'jison',
+26 silly addNameRange   [ '0.1.20',
+26 silly addNameRange     '0.1.21',
+26 silly addNameRange     '0.1.24',
+26 silly addNameRange     '0.1.25',
+26 silly addNameRange     '0.1.26',
+26 silly addNameRange     '0.1.27',
+26 silly addNameRange     '0.2.0',
+26 silly addNameRange     '0.2.1',
+26 silly addNameRange     '0.2.2',
+26 silly addNameRange     '0.2.4',
+26 silly addNameRange     '0.2.5',
+26 silly addNameRange     '0.2.6',
+26 silly addNameRange     '0.2.7',
+26 silly addNameRange     '0.2.8',
+26 silly addNameRange     '0.2.9',
+26 silly addNameRange     '0.2.10',
+26 silly addNameRange     '0.2.11',
+26 silly addNameRange     '0.2.12',
+26 silly addNameRange     '0.2.13',
+26 silly addNameRange     '0.2.14',
+26 silly addNameRange     '0.3.0',
+26 silly addNameRange     '0.3.1',
+26 silly addNameRange     '0.3.2',
+26 silly addNameRange     '0.3.3',
+26 silly addNameRange     '0.3.4',
+26 silly addNameRange     '0.3.5',
+26 silly addNameRange     '0.3.6',
+26 silly addNameRange     '0.3.7',
+26 silly addNameRange     '0.3.8',
+26 silly addNameRange     '0.3.9',
+26 silly addNameRange     '0.3.10',
+26 silly addNameRange     '0.3.11',
+26 silly addNameRange     '0.3.12',
+26 silly addNameRange     '0.4.0',
+26 silly addNameRange     '0.4.1',
+26 silly addNameRange     '0.4.2',
+26 silly addNameRange     '0.4.3',
+26 silly addNameRange     '0.4.4',
+26 silly addNameRange     '0.4.5',
+26 silly addNameRange     '0.4.6',
+26 silly addNameRange     '0.4.7',
+26 silly addNameRange     '0.4.8',
+26 silly addNameRange     '0.4.9',
+26 silly addNameRange     '0.4.10',
+26 silly addNameRange     '0.4.11',
+26 silly addNameRange     '0.4.13',
+26 silly addNameRange     '0.4.14',
+26 silly addNameRange     '0.4.15' ] ]
+27 verbose addNamed [ 'jison', '0.4.15' ]
+28 verbose addNamed [ '0.4.15', '0.4.15' ]
+29 silly lockFile 1b9a0246-jison-0-4-15 jison@0.4.15
+30 verbose lock jison@0.4.15 /home/rtrk/.npm/1b9a0246-jison-0-4-15.lock
+31 silly lockFile 1b9a0246-jison-0-4-15 jison@0.4.15
+32 silly lockFile 1b9a0246-jison-0-4-15 jison@0.4.15
+33 silly lockFile 21a76936-jison jison@
+34 silly lockFile 21a76936-jison jison@
+35 silly resolved [ { author:
+35 silly resolved      { name: 'Zach Carter',
+35 silly resolved        email: 'zach@carter.name',
+35 silly resolved        url: 'http://zaa.ch' },
+35 silly resolved     name: 'jison',
+35 silly resolved     description: 'A parser generator with Bison\'s API',
+35 silly resolved     version: '0.4.15',
+35 silly resolved     keywords:
+35 silly resolved      [ 'jison',
+35 silly resolved        'bison',
+35 silly resolved        'yacc',
+35 silly resolved        'parser',
+35 silly resolved        'generator',
+35 silly resolved        'lexer',
+35 silly resolved        'flex',
+35 silly resolved        'tokenizer',
+35 silly resolved        'compiler' ],
+35 silly resolved     preferGlobal: true,
+35 silly resolved     repository: { type: 'git', url: 'git://github.com/zaach/jison.git' },
+35 silly resolved     bugs:
+35 silly resolved      { url: 'http://github.com/zaach/jison/issues',
+35 silly resolved        email: 'jison@librelist.com' },
+35 silly resolved     main: 'lib/jison',
+35 silly resolved     bin: { jison: 'lib/cli.js' },
+35 silly resolved     engines: { node: '>=0.4' },
+35 silly resolved     dependencies:
+35 silly resolved      { JSONSelect: '0.4.0',
+35 silly resolved        esprima: '1.1.x',
+35 silly resolved        escodegen: '1.3.x',
+35 silly resolved        'jison-lex': '0.3.x',
+35 silly resolved        'ebnf-parser': '0.1.10',
+35 silly resolved        'lex-parser': '~0.1.3',
+35 silly resolved        nomnom: '1.5.2',
+35 silly resolved        cjson: '0.3.0' },
+35 silly resolved     devDependencies:
+35 silly resolved      { test: '0.6.x',
+35 silly resolved        jison: '0.4.x',
+35 silly resolved        'uglify-js': '~2.4.0',
+35 silly resolved        browserify: '2.x.x' },
+35 silly resolved     scripts: { test: 'node tests/all-tests.js' },
+35 silly resolved     homepage: 'http://jison.org',
+35 silly resolved     readme: 'Jison\n=====\n* [issues](http://github.com/zaach/jison/issues)\n* [discuss](mailto:jison@librelist.com)\n\n[![build status](https://secure.travis-ci.org/zaach/jison.png)](http://travis-ci.org/zaach/jison)\n\nAn API for creating parsers in JavaScript\n-----------------------------------------\n\nJison generates bottom-up parsers in JavaScript. Its API is similar to Bison\'s, hence the name. It supports many of Bison\'s major features, plus some of its own. If you are new to parser generators such as Bison, and Context-free Grammars in general, a [good introduction][1] is found in the Bison manual. If you already know Bison, Jison should be easy to pickup.\n\nBriefly, Jison takes a JSON encoded grammar or Bison style grammar and outputs a JavaScript file capable of parsing the language described by that grammar. You can then use the generated script to parse inputs and accept, reject, or perform actions based on the input.\n\nInstallation\n------------\nJison can be installed for [Node](http://nodejs.org) using [`npm`](http://github.com/isaacs/npm/)\n\nUsing npm:\n\n    npm install jison -g\n\nUsage from the command line\n-----------------------\n\nClone the github repository for examples:\n\n    git clone git://github.com/zaach/jison.git\n    cd jison/examples\n\nNow you\'re ready to generate some parsers:\n\n    jison calculator.jison\n\nThis will generate `calculator.js` in your current working directory. This file can be used to parse an input file, like so:\n\n    echo "2^32 / 1024" > testcalc\n    node calculator.js testcalc\n\nThis will print out `4194304`.\n\nFull cli option list:\n\n    Usage: jison [file] [lexfile] [options]\n\n    file        file containing a grammar\n    lexfile     file containing a lexical grammar\n\n    Options:\n       -j, --json                    force jison to expect a grammar in JSON format\n       -o FILE, --outfile FILE       Filename and base module name of the generated parser\n       -t, --debug                   Debug mode\n       -m TYPE, --module-type TYPE   The type of module to generate (commonjs, amd, js)\n       -p TYPE, --parser-type TYPE   The type of algorithm to use for the parser (lr0, slr, lalr, lr)\n       -V, --version                 print version and exit\n\n\nUsage from a CommonJS module\n--------------------------\n\nYou can generate parsers programatically from JavaScript as well. Assuming Jison is in your commonjs environment\'s load path:\n\n    // mygenerator.js\n    var Parser = require("jison").Parser;\n    \n    // a grammar in JSON\n    var grammar = {\n        "lex": {\n            "rules": [\n               ["\\\\s+", "/* skip whitespace */"],\n               ["[a-f0-9]+", "return \'HEX\';"]\n            ]\n        },\n    \n        "bnf": {\n            "hex_strings" :[ "hex_strings HEX",\n                             "HEX" ]\n        }\n    };\n    \n    // `grammar` can also be a string that uses jison\'s grammar format\n    var parser = new Parser(grammar);\n    \n    // generate source, ready to be written to disk\n    var parserSource = parser.generate();\n    \n    // you can also use the parser directly from memory\n    \n    // returns true\n    parser.parse("adfe34bc e82a");\n    \n    // throws lexical error\n    parser.parse("adfe34bc zxg");\n\n\nMore Documentation\n------------------\nFor more information on creating grammars and using the generated parsers, read the [documentation](http://jison.org/docs).\n\nHow to contribute\n-----------------\nFork, make your changes, run tests and/or add tests then send a pull request.\n\nRun tests with:\n\n    make test\n\nProjects using Jison\n------------------\n\nView them on the [wiki](https://github.com/zaach/jison/wiki/ProjectsUsingJison), or add your own.\n\n\nContributors\n------------\n[Githubbers](http://github.com/zaach/jison/contributors)\n\nSpecial thanks to Jarred Ligatti, Manuel E. Bermúdez \n\nLicense\n-------\n\n> Copyright (c) 2009-2014 Zachary Carter\n> \n>  Permission is hereby granted, free of\n> charge, to any person  obtaining a\n> copy of this software and associated\n> documentation  files (the "Software"),\n> to deal in the Software without \n> restriction, including without\n> limitation the rights to use,  copy,\n> modify, merge, publish, distribute,\n> sublicense, and/or sell  copies of the\n> Software, and to permit persons to\n> whom the  Software is furnished to do\n> so, subject to the following \n> conditions:\n> \n>  The above copyright notice and this\n> permission notice shall be  included\n> in all copies or substantial portions\n> of the Software.\n> \n>  THE SOFTWARE IS PROVIDED "AS IS",\n> WITHOUT WARRANTY OF ANY KIND,  EXPRESS\n> OR IMPLIED, INCLUDING BUT NOT LIMITED\n> TO THE WARRANTIES  OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND \n> NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT  HOLDERS BE\n> LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY,  WHETHER IN AN ACTION OF\n> CONTRACT, TORT OR OTHERWISE, ARISING \n> FROM, OUT OF OR IN CONNECTION WITH THE\n> SOFTWARE OR THE USE OR  OTHER DEALINGS\n> IN THE SOFTWARE.\n\n\n  [1]: http://dinosaur.compilertools.net/bison/bison_4.html\n\n',
+35 silly resolved     readmeFilename: 'README.md',
+35 silly resolved     _id: 'jison@0.4.15',
+35 silly resolved     _from: 'jison@' } ]
+36 info install jison@0.4.15 into /usr/local/lib
+37 info installOne jison@0.4.15
+38 info /usr/local/lib/node_modules/jison unbuild
+39 info preuninstall jison@0.4.15
+40 info uninstall jison@0.4.15
+41 verbose true,/usr/local/lib/node_modules,/usr/local/lib/node_modules unbuild jison@0.4.15
+42 verbose /usr/local/bin,[object Object] binRoot
+43 info /usr/local/lib/node_modules/jison unbuild
+44 info preuninstall jison@0.4.15
+45 info uninstall jison@0.4.15
+46 verbose true,/usr/local/lib/node_modules,/usr/local/lib/node_modules unbuild jison@0.4.15
+47 verbose /usr/local/bin,[object Object] binRoot
+48 error error rolling back Error: EACCES, unlink '/usr/local/bin/jison'
+48 error error rolling back  jison@0.4.15 { [Error: EACCES, unlink '/usr/local/bin/jison'] errno: 3, code: 'EACCES', path: '/usr/local/bin/jison' }
+49 error Error: EACCES, unlink '/usr/local/bin/jison'
+49 error  { [Error: EACCES, unlink '/usr/local/bin/jison'] errno: 3, code: 'EACCES', path: '/usr/local/bin/jison' }
+50 error Please try running this command again as root/Administrator.
+51 error System Linux 3.13.0-53-generic
+52 error command "/usr/bin/nodejs" "/usr/bin/npm" "install" "-g" "jison"
+53 error cwd /home/rtrk/Documents/ThreadSimulator2/grammar
+54 error node -v v0.10.25
+55 error npm -v 1.3.10
+56 error path /usr/local/bin/jison
+57 error code EACCES
+58 error errno 3
+59 error stack Error: EACCES, unlink '/usr/local/bin/jison'
+60 verbose exit [ 3, true ]

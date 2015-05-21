@@ -20,7 +20,8 @@ int main(int argc)
 
 		x = x + 2
 	}
-	t[i].join()
+	t[0].join()
+	return 0
 }
 
 instructions:
@@ -36,5 +37,28 @@ instructions:
 5) generateFrame("main", "global")
 6) 100 x addVar("main", { type : thread, name : t_i /* t_0, t_1, t_2 ... */}, joined : false)
 7) generateFrame("for_0", "main")
+
+//examine init part of the loop and add vars
 8) addVar("for_0", {type : int, name : i, value: 0})
-9) 
+
+9) addLoopStart("for_0", 9 /* this instr number */)
+
+11) generateFrame("for_0_inner", "for_0")
+
+//examine end part of the loop and check condition
+10) checkLoopCondition(end_loop) // if it is false:
+								// if there is remembered loop end, jump to loopend + 1 instruction
+								// if there is no remembered loop end, go to next instr
+
+11) addVar("for_0", { type : int, name: x, value : 0})
+12) acumRemember("x", 0)
+13) acumAdd("x", 2)
+14) changeValue(x, accumGet("x"))
+
+15) destroyFrame("for_0_inner")
+16) jumpToRememberedLoopStart() // and remember this point(16) as loop end
+17) joinThread("t_0")
+18) return(0)
+
+
+

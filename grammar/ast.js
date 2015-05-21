@@ -33,6 +33,7 @@ TSExpression.prototype.printDetails = function(level)
 {
 	return "";
 }
+
 /*=============================================*/
 /*
 /* 			TSStatement

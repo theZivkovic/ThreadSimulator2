@@ -2,6 +2,7 @@
 
 %{
 	var AST = require("./ast");
+	var ASTPARSER = require("./astParser");
 
 	var greatBlock;
 %}
@@ -58,7 +59,13 @@ program
 	: statements EOF
 	{
 		greatBlock = $1;
+
 		greatBlock.printDetails(0);
+
+		var astParser = new ASTPARSER.TSAbstractSyntaxTreeParser(greatBlock);
+		astParser.parse();
+
+		console.log(astParser.instructions);
 	}
 	;
 
