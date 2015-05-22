@@ -94,7 +94,7 @@ case 1:
 
 		var instructionList = [];
 
-		greatBlock.generateCode(instructionList);
+		greatBlock.generateCode(instructionList, 0);
 
 		console.log(instructionList);
 	

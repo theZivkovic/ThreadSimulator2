@@ -1,6 +1,1 @@
-int x = a[5 + f(1+2, 3*4)]
-
-int main(int a, int b)
-{
-	
-}
+int a = a(0, 3 * f[2 + 4] + f[1 * 3])

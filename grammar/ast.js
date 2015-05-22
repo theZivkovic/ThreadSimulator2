@@ -16,6 +16,51 @@ function TSNode()
 {
 
 }
+//////////////////////////////////////////
+//
+// 	prints string identification of object
+//
+//////////////////////////////////////////
+TSNode.prototype.getType = function()
+{
+	return "TSNode";
+}
+//////////////////////////////////////////
+//
+// 	dummy toString()
+//
+//////////////////////////////////////////
+TSNode.prototype.toString = function()
+{
+	return "TSNode";
+}
+//////////////////////////////////////////
+//
+// 	Prints details about node, and propagates
+//  printing to sub nodes, so the whole ast
+//  can be print with one call 
+//
+//////////////////////////////////////////
+TSNode.prototype.printDetails = function(level)
+{
+	return "";
+}
+//////////////////////////////////////////////////////////
+//
+// 	fills instruction list with instructions
+//	that this node generates. @n is starting
+//  index of temp variable that will be used
+//  while generating these instructions
+//
+//	return value is the last variable index
+// 	used
+//
+///////////////////////////////////////////////////////////
+TSNode.prototype.generateCode = function(instructionList, n)
+{
+	return n;
+}
+
 
 /*=============================================*/
 /*
@@ -39,9 +84,9 @@ TSExpression.prototype.printDetails = function(level)
 {
 	return "";
 }
-TSExpression.prototype.generateCode = function(instructionList)
+TSExpression.prototype.generateCode = function(instructionList, n)
 {
-
+	return n;
 }
 
 /*=============================================*/
@@ -66,9 +111,9 @@ TSStatement.prototype.printDetails = function(level)
 {
 	return "";
 }
-TSStatement.prototype.generateCode = function(instructionList)
+TSStatement.prototype.generateCode = function(instructionList, n)
 {
-	
+	return n;
 }
 /*=============================================*/
 /*
@@ -92,13 +137,11 @@ TSInteger.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSInteger] {0} [/TSInteger]", this.value)));
 }
-TSInteger.prototype.generateSetTempValueCode = function(index , instructionList)
+TSInteger.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + index , this.value]));
-}
-TSInteger.prototype.generateCode = function(instructionList)
-{
-	
+	instructionList.push(new Instruction("setTempValue", ["$" + n , this.value]));
+
+	return n;
 }
 /*=============================================*/
 /*
@@ -122,13 +165,11 @@ TSDouble.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSDouble] {0} [/TSDouble]", this.value)));
 }
-TSDouble.prototype.generateSetTempValueCode = function(index , instructionList)
+TSDouble.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + index , this.value]));
-}
-TSDouble.prototype.generateCode = function(instructionList)
-{
-	
+	instructionList.push(new Instruction("setTempValue", ["$" + n , this.value]));
+
+	return n;
 }
 
 /*=============================================*/
@@ -153,13 +194,11 @@ TSBool.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSBool] {0} [/TSBool]", this.value)));
 }
-TSBool.prototype.generateSetTempValueCode = function(index , instructionList)
+TSBool.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + index , this.value]));
-}
-TSBool.prototype.generateCode = function(instructionList)
-{
-	
+	instructionList.push(new Instruction("setTempValue", ["$" + n , this.value]));
+
+	return n;
 }
 /*=============================================*/
 /*
@@ -183,14 +222,13 @@ TSString.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSString] {0} [/TSString]", this.value)));
 }
-TSString.prototype.generateSetTempValueCode = function(index , instructionList)
+TSString.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + index , this.value]));
+	instructionList.push(new Instruction("setTempValue", ["$" + n , this.value]));
+
+	return n;
 }
-TSString.prototype.generateCode = function(instructionList)
-{
-	
-}
+
 /*=============================================*/
 /*
 /* 			TSObject
@@ -213,9 +251,10 @@ TSObject.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSObject] {0} [/TSObject]", this.type)));
 }
-TSObject.prototype.generateCode = function(instructionList)
+TSObject.prototype.generateCode = function(instructionList, n)
 {
-	
+	// nothing for now
+
 }
 /*==============================================================*/
 /*
@@ -239,13 +278,11 @@ TSIdentifier.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSIdentifier] {0} [/TSIdentifier]", this.name)));
 }
-TSIdentifier.prototype.generateSetTempValueCode = function(index , instructionList)
+TSIdentifier.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + index , this.value]));
-}
-TSIdentifier.prototype.generateCode = function(instructionList)
-{
-	
+	instructionList.push(new Instruction("setTempValue", ["$" + n , format("valueOF({0})",this.value)]));
+
+	return n;
 }
 /*==============================================================*/
 /*
@@ -272,15 +309,13 @@ TSArrayIdentifier.prototype.printDetails = function(level)
 		this.indexExpr.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSIdentifier]"));
 }
-TSArrayIdentifier.prototype.generateSetTempValueCode = function(index , instructionList)
+TSArrayIdentifier.prototype.generateCode = function(instructionList, n)
 {
-	this.indexExpr.generateCode(instructionList);
+	var lastN = this.indexExpr.generateCode(instructionList, n) + 1;
 
-	instructionList.push(new Instruction("setTempValue", ["$" + index , format("{0}[{1}]",this.name, "$0")]));
-}
-TSArrayIdentifier.prototype.generateCode = function(instructionList)
-{
-	
+	lastN = instructionList.push(new Instruction("setTempValue", ["$" + n , format("{0}[{1}]",this.name, "$" + n)]));
+
+	return lastN;
 }
 /*==============================================================*/
 /*
@@ -309,9 +344,15 @@ TSBinaryOperation.prototype.printDetails = function(level)
 		this.secondOperand.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSBinaryOperation]"));
 }
-TSBinaryOperation.prototype.generateCode = function(instructionList)
+TSBinaryOperation.prototype.generateCode = function(instructionList, n)
 {
-	
+	var afterLeftN = this.firstOperand.generateCode(instructionList, n) + 1;
+
+	var afterRightN = this.secondOperand.generateCode(instructionList, afterLeftN);
+
+	instructionList.push(new Instruction("setTempValue", ["$" + n, format("${0} {1} ${2}", n, this.operation, afterLeftN)]));
+
+	return afterRightN;
 }
 /*==============================================================*/
 /*
@@ -340,12 +381,16 @@ TSBlock.prototype.printDetails = function(level)
 	}
 	console.log(HELPER.indentString(level, "[/TSBlock]"));
 }
-TSBlock.prototype.generateCode = function(instructionList)
+TSBlock.prototype.generateCode = function(instructionList, n)
 {
+	var nSoFar = n;
+
 	for (var i = 0 ; i < this.statements.length; i++)
 	{
-		this.statements[i].generateCode(instructionList);
+		nSoFar = this.statements[i].generateCode(instructionList, nSoFar);
 	}
+
+	return nSoFar;
 }
 /*==============================================================*/
 /*
@@ -373,9 +418,13 @@ TSAssignment.prototype.printDetails = function(level)
 		this.expression.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSAssignment]")); 
 }
-TSAssignment.prototype.generateCode = function(instructionList)
+TSAssignment.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("assignValue", [this.name, "$0"]));
+	var lastN = this.expression.generateCode(instructionList, n) + 1;
+
+	instructionList.push(new Instruction("assignValue", [this.name, "$" + n]));
+
+	return lastN;
 }
 
 /*==============================================================*/
@@ -420,9 +469,11 @@ TSExpression.prototype.generateCodeForCalculation = function(expression, n, inst
 		return n;
 	}
 }
-TSExpression.prototype.generateCode = function(instructionList)
+TSExpression.prototype.generateCode = function(instructionList, n)
 {
-	this.generateCodeForCalculation(this.expression, 0, instructionList);
+	n = this.expression.generateCode(instructionList, n);
+
+	return n;
 }
 /*==============================================================*/
 /*
@@ -455,24 +506,32 @@ TSFunctionCall.prototype.printDetails = function(level)
 }
 TSFunctionCall.prototype.generateSetTempValueCode = function(index , instructionList)
 {
+	
+}
+TSFunctionCall.prototype.generateCode = function(instructionList, n)
+{
 	instructionList.push(new Instruction("prepareArgList", []));
+
+	var lastN = n;
+	var beforeN = n;
 
 	for (var i = 0 ; i < this.argumentsExpressions.length; i++)
 	{
-		this.argumentsExpressions[i].generateCode(instructionList);
+		lastN = this.argumentsExpressions[i].generateCode(instructionList, beforeN) + 1;
 
 		instructionList.push(new Instruction("setArgListValue", [
 																	 i,
-																	 "$0"
+																	 "$" + beforeN
 																 ]));
+		beforeN = lastN;
 
 	}
-	instructionList.push(new Instruction("setTempValue", ["$" + index , format("call {0}", this.identifier)]));
+	instructionList.push(new Instruction("setTempValue", ["$" + n , format("call {0}", this.identifier)]));
 	instructionList.push(new Instruction("clearArgList", []));
-}
-TSFunctionCall.prototype.generateCode = function(instructionList)
-{
-	
+
+	n+=2;
+
+	return n;
 }
 /*==============================================================*/
 /*
@@ -509,7 +568,7 @@ TSFunctionDeclaration.prototype.printDetails = function(level)
 		this.block.printDetails(level + 1);		
 	console.log(HELPER.indentString(level, "[/TSFunctionDeclaration]")); 
 }
-TSFunctionDeclaration.prototype.generateCode = function(instructionList)
+TSFunctionDeclaration.prototype.generateCode = function(instructionList, n)
 {
 	var arguments = [];	 // fill arguments
 
@@ -530,6 +589,8 @@ TSFunctionDeclaration.prototype.generateCode = function(instructionList)
 															arguments
 
 														  ]));
+
+	return n;
 }
 /*==============================================================*/
 /*
@@ -562,15 +623,16 @@ TSVariableDeclaration.prototype.printDetails = function(level)
 	console.log(HELPER.indentString(level, "[/TSVariableDeclaration]"));	
 }
 
-TSVariableDeclaration.prototype.generateCode = function(instructionList)
+TSVariableDeclaration.prototype.generateCode = function(instructionList, n)
 {
-	this.expression.generateCode(instructionList);
+	lastN = this.expression.generateCode(instructionList, n);
 
 	instructionList.push(new Instruction("addVariable", [
 												this.type,
 												this.identifier,
-												"$0"
+												"$" + n
 										]));
+	return lastN + 1;
 }
 /*==============================================================*/
 /*
@@ -598,15 +660,16 @@ TSArrayVariableDeclaration.prototype.printDetails = function(level)
 	console.log(HELPER.indentString(level, format("[TSArrayVariableDeclaration] {0} {1} [{2}] [/TSArrayVariableDeclaration]", 
 		this.type, this.identifier, this.sizeExpr)));	
 }
-TSArrayVariableDeclaration.prototype.generateCode = function(instructionList)
+TSArrayVariableDeclaration.prototype.generateCode = function(instructionList, n)
 {
 	this.sizeExpr.generateCode(instructionList);
 
 	instructionList.push(new Instruction("addArrayVariable", [
 																this.type,
 																this.identifier,
-																"$0"	
+																"$" + n	
 															 ]));
+	return n + 1;
 }
 
 /*==============================================================*/
@@ -634,9 +697,9 @@ TSExpressionStatement.prototype.printDetails = function(level)
 		this.expression.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSExpressionStatement]"));
 }
-TSExpressionStatement.prototype.generateCode = function(instructionList)
+TSExpressionStatement.prototype.generateCode = function(instructionList, n)
 {
-
+	// nothing for now
 }
 
 /*==============================================================*/
@@ -664,13 +727,14 @@ TSReturnStatement.prototype.printDetails = function(level)
 		this.expression.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSReturnStatement]"));
 }
-TSReturnStatement.prototype.generateCode = function(instructionList)
+TSReturnStatement.prototype.generateCode = function(instructionList, n)
 {
 	this.expression.generateCode(instructionList);
 
 	instructionList.push(new Instruction("return", [
-														"$0"
+														"$" + n
 												   ]));
+	return n+1;
 }
 
 /*==============================================================*/
