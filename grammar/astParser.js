@@ -28,6 +28,11 @@ TSAbstractSyntaxTreeParser.prototype.generateCodeForCalculation = function(expre
 		this.instructions.push(new Instruction("setTempValue", ["global", "$"+n , expression.value]));
 		return n;
 	}
+	if (expression.getType() == "TSIdentifier")
+	{
+		this.instructions.push(new Instruction("setTempValue", ["global", "$"+n , expression.name]));
+		return n;
+	}
 	else if (expression.getType() == "TSBinaryOperation")
 	{
 		var first = this.generateCodeForCalculation(expression.firstOperand, 2*n + 1);
@@ -84,18 +89,77 @@ TSAbstractSyntaxTreeParser.prototype.parse = function()
 				if (expression != null)
 				{
 					this.generateCodeForCalculation(expression, 0);
-				}
 
-				this.instructions.push(new Instruction("addVariable", [
+					this.instructions.push(new Instruction("addVariable", [
 																		"global",
 																		currentStatement.type,
 																		currentStatement.identifier,
 																		 "$0"	
 																	  ]));
+				}
+				else
+				{
+					this.instructions.push (new Instruction("addVariable", [
+																			"global",
+																			currentStatement.type,
+																			currentStatement.identifier,
+																			null
+																			]));
+				}
 				break;
 			}
 		}
 	}
+
+	// find main method and continue filling instructions from there
+
+	var result = this.tree.statements.filter(function(element)
+	{
+		return element.getType() == "TSFunctionDeclaration" && element.identifier == "main";
+	});
+
+	if (result.length == 0)
+	{
+		return {
+					code : -1,
+					methodName : "TSAbstractSyntaxTreeParser.parse",
+					errorMessage: format("Main method doesn't exist") 
+			   }
+	}
+	
+	var mainMethod = result[0];
+
+	// add main frame to the program
+
+	this.instructions.push(new Instruction("addFrame", ["main", "global"]));
+
+	// add main arguments to its scope
+
+	for (var i = 0 ; i < mainMethod.arguments.length; i++)
+	{
+		var currentVariable = mainMethod.arguments[i];
+
+		// main arguments can't be declared with a value
+
+		if (currentVariable.expression != undefined)
+		{
+			return {
+					code : -1,
+					methodName : "TSAbstractSyntaxTreeParser.parse",
+					errorMessage: format("Main method bad arguments") 
+			   } 
+		}
+		this.instructions.push(new Instruction("addVariable", [
+																'main',
+																currentVariable.type,
+																currentVariable.identifier,
+																 null
+		 													 ]));
+	}
+
+	
+
+	return { code : 0 };
 }
 
 /*=============================================*/

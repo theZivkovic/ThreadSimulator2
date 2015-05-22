@@ -1,8 +1,6 @@
-int x = 2 + 4 * 3
-int y
-int z = 4
+int x = a[5 + f(1+2, 3*4)]
 
-int main(int argc, int argv)
+int main(int a, int b)
 {
-
+	
 }

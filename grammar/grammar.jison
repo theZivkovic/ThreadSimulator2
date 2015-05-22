@@ -3,6 +3,7 @@
 %{
 	var AST = require("./ast");
 	var ASTPARSER = require("./astParser");
+	var HELPER = require("./helper");
 
 	var greatBlock;
 %}
@@ -62,10 +63,14 @@ program
 
 		greatBlock.printDetails(0);
 
-		var astParser = new ASTPARSER.TSAbstractSyntaxTreeParser(greatBlock);
-		astParser.parse();
+		console.log("");
+		console.log("");
 
-		console.log(astParser.instructions);
+		var instructionList = [];
+
+		greatBlock.generateCode(instructionList);
+
+		console.log(instructionList);
 	}
 	;
 
@@ -96,18 +101,18 @@ statement
 assign_statement
 	: IDENTIFIER ASSIGN expression
 	{
-		$$ = new AST.TSAssignment($1, $3);
+		$$ = new AST.TSAssignment($1, new AST.TSExpression($3));
 	}
 	| array_identifier ASSIGN expression
 	{
-		$$ = new AST.TSAssignment($1, $3);
+		$$ = new AST.TSAssignment($1, new AST.TSExpression($3));
 	}
 	;
 
 array_identifier
 	: IDENTIFIER LSHARPBRACKET expression RSHARPBRACKET
 	{
-		$$ = new AST.TSArrayIdentifier($1, $3);
+		$$ = new AST.TSArrayIdentifier($1, new AST.TSExpression($3));
 	}
 	;
 
@@ -157,7 +162,7 @@ variable_declaration
 	}
 	| IDENTIFIER IDENTIFIER ASSIGN expression
 	{
-		$$ = new AST.TSVariableDeclaration($1, $2, $4);
+		$$ = new AST.TSVariableDeclaration($1, $2, new AST.TSExpression($4));
 	}
 	| IDENTIFIER IDENTIFIER LSHARPBRACKET INTEGER RSHARPBRACKET
 	{
@@ -268,11 +273,11 @@ function_declaration_args
 function_call_args
 	: function_call_args COMMA expression
 	{
-		$1.push($3);
+		$1.push(new AST.TSExpression($3));
 	}
 	| expression
 	{
-		$$ = [$1];
+		$$ = [new AST.TSExpression($1)];
 	}
 	; 
 
