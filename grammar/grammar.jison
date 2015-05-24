@@ -70,7 +70,10 @@ program
 
 		greatBlock.generateCode(instructionList, 0);
 
-		console.log(instructionList);
+		for (var i = 0; i < instructionList.length; i++)
+		{
+		console.log(i + ": " + instructionList[i].name + "\t" + instructionList[i].args);
+		}
 	}
 	;
 
@@ -90,18 +93,29 @@ statement
 	: variable_declaration
 	| function_declaration
 	| assign_statement
-	| RETURN expression
-	{
-		$$ = new AST.TSReturnStatement($2);
-	}
+	| expession_statement
 	| method_call
 	| for_loop
 	;
 
+expession_statement
+	: RETURN expression
+	{
+		$$ = new AST.TSReturnStatement($2);
+	}
+	| IDENTIFIER LBRACKET function_call_args RBRACKET
+	{
+		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), $3);
+	}
+	| IDENTIFIER LBRACKET RBRACKET
+	{
+		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), null);
+	}
+	;
 assign_statement
 	: IDENTIFIER ASSIGN expression
 	{
-		$$ = new AST.TSAssignment($1, new AST.TSExpression($3));
+		$$ = new AST.TSAssignment(new AST.TSIdentifier($1), new AST.TSExpression($3));
 	}
 	| array_identifier ASSIGN expression
 	{
@@ -205,7 +219,7 @@ expression
 	}
 	| IDENTIFIER LBRACKET function_call_args RBRACKET
 	{
-		$$ = new AST.TSFunctionCall($1, $3);
+		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), $3);
 	}
 	| array_identifier
 	{

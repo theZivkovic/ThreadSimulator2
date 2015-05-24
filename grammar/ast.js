@@ -47,7 +47,7 @@ TSNode.prototype.printDetails = function(level)
 }
 //////////////////////////////////////////////////////////
 //
-// 	fills instruction list with instructions
+// 	fills instruction-list with instructions
 //	that this node generates. @n is starting
 //  index of temp variable that will be used
 //  while generating these instructions
@@ -254,7 +254,6 @@ TSObject.prototype.printDetails = function(level)
 TSObject.prototype.generateCode = function(instructionList, n)
 {
 	// nothing for now
-
 }
 /*==============================================================*/
 /*
@@ -280,7 +279,7 @@ TSIdentifier.prototype.printDetails = function(level)
 }
 TSIdentifier.prototype.generateCode = function(instructionList, n)
 {
-	instructionList.push(new Instruction("setTempValue", ["$" + n , format("valueOF({0})",this.value)]));
+	instructionList.push(new Instruction("setTempValue", ["$" + n , format("valueOF({0})",this.name)]));
 
 	return n;
 }
@@ -305,9 +304,9 @@ TSArrayIdentifier.prototype.toString = function()
 }
 TSArrayIdentifier.prototype.printDetails = function(level)
 {
-	console.log(HELPER.indentString(level, format("[TSIdentifier] {0}[...]]", this.name)));
+	console.log(HELPER.indentString(level, format("[TSArrayIdentifier] {0}[...]]", this.name)));
 		this.indexExpr.printDetails(level + 1);
-	console.log(HELPER.indentString(level, "[/TSIdentifier]"));
+	console.log(HELPER.indentString(level, "[/TSArrayIdentifier]"));
 }
 TSArrayIdentifier.prototype.generateCode = function(instructionList, n)
 {
@@ -383,23 +382,20 @@ TSBlock.prototype.printDetails = function(level)
 }
 TSBlock.prototype.generateCode = function(instructionList, n)
 {
-	var nSoFar = n;
-
 	for (var i = 0 ; i < this.statements.length; i++)
 	{
-		nSoFar = this.statements[i].generateCode(instructionList, nSoFar);
+		this.statements[i].generateCode(instructionList, n);
 	}
-
-	return nSoFar;
+	return n;
 }
 /*==============================================================*/
 /*
 /* 			TSAssignment
 /*
 /*===============================================================*/
-function TSAssignment(name, expression)
+function TSAssignment(leftSide, expression)
 {
-	this.name = name;
+	this.leftSide = leftSide;
 	this.expression = expression;
 }
 
@@ -414,17 +410,38 @@ TSAssignment.prototype.toString = function()
 }
 TSAssignment.prototype.printDetails = function(level)
 {
-	console.log(HELPER.indentString(level, format("[TSAssignment] {0} -> ", this.name)));
-		this.expression.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[TSAssignment]"));
+		
+		console.log(HELPER.indentString(level + 1, "[left side]"));
+				if (this.leftSide.getType() == "TSArrayIdentifier")
+					this.leftSide.indexExpr.printDetails(level + 2);
+				else if (this.leftSide.getType() == "TSIdentifier")
+					this.leftSide.printDetails(level+2);
+		console.log(HELPER.indentString(level + 1, "[/left side]"));
+		console.log(HELPER.indentString(level + 1, "[right side]"));
+			this.expression.printDetails(level + 2);
+		console.log(HELPER.indentString(level + 1, "[/right side]"));
+
 	console.log(HELPER.indentString(level, "[/TSAssignment]")); 
 }
 TSAssignment.prototype.generateCode = function(instructionList, n)
-{
+{	
 	var lastN = this.expression.generateCode(instructionList, n) + 1;
 
-	instructionList.push(new Instruction("assignValue", [this.name, "$" + n]));
+	if (this.leftSide.getType() == "TSArrayIdentifier")
+	{
+		lastNN = this.leftSide.indexExpr.generateCode(instructionList, lastN) + 1;
 
-	return lastN;
+		instructionList.push(new Instruction("setArrayVariable", [
+																		this.leftSide.name,
+																		"$" + lastN,
+																		"$" + n																 ]));
+		return lastNN;
+	}
+	else if (this.leftSide.getType() == "TSIdentifier")
+	{
+		instructionList.push(new Instruction("setVariable", [this.leftSide.name, "$" + n]));
+	}
 }
 
 /*==============================================================*/
@@ -452,22 +469,6 @@ TSExpression.prototype.printDetails = function(level)
 	console.log(HELPER.indentString(level, "[TSExpression]"));
 		this.expression.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSExpression]")); 
-}
-TSExpression.prototype.generateCodeForCalculation = function(expression, n, instructionList) // helper function
-{
-	if (expression.getType() == "TSBinaryOperation")
-	{
-		var first = this.generateCodeForCalculation(expression.firstOperand, 2*n + 1, instructionList);
-		var second = this.generateCodeForCalculation(expression.secondOperand, 2*n + 2, instructionList);
-
-		instructionList.push(new Instruction("setTempValue", ["$" + n, format("${0} {1} ${2}", first, expression.operation, second)]));
-		return n;
-	}
-	else 
-	{
-		expression.generateSetTempValueCode(n, instructionList);
-		return n;
-	}
 }
 TSExpression.prototype.generateCode = function(instructionList, n)
 {
@@ -498,15 +499,14 @@ TSFunctionCall.prototype.toString = function()
 TSFunctionCall.prototype.printDetails = function(level)
 {
 	console.log(HELPER.indentString(level, format("[TSFunctionCall] {0} ", this.name)));
-		for (var i = 0 ; i < this.argumentsExpressions.length; i++)
+		if (this.argumentsExpressions != null)
 		{
-			this.argumentsExpressions[i].printDetails(level + 1);
+			for (var i = 0 ; i < this.argumentsExpressions.length; i++)
+			{
+				this.argumentsExpressions[i].printDetails(level + 1);
+			}
 		}
 	console.log(HELPER.indentString(level, "[/TSFunctionCall]")); 
-}
-TSFunctionCall.prototype.generateSetTempValueCode = function(index , instructionList)
-{
-	
 }
 TSFunctionCall.prototype.generateCode = function(instructionList, n)
 {
@@ -515,23 +515,24 @@ TSFunctionCall.prototype.generateCode = function(instructionList, n)
 	var lastN = n;
 	var beforeN = n;
 
-	for (var i = 0 ; i < this.argumentsExpressions.length; i++)
+	if (this.argumentsExpressions != null)
 	{
-		lastN = this.argumentsExpressions[i].generateCode(instructionList, beforeN) + 1;
+		for (var i = 0 ; i < this.argumentsExpressions.length; i++)
+		{
+			lastN = this.argumentsExpressions[i].generateCode(instructionList, beforeN) + 1;
 
-		instructionList.push(new Instruction("setArgListValue", [
-																	 i,
-																	 "$" + beforeN
-																 ]));
-		beforeN = lastN;
+			instructionList.push(new Instruction("setArgListValue", [
+																		 i,
+																		 "$" + beforeN
+																	 ]));
+			beforeN = lastN;
 
+		}
 	}
-	instructionList.push(new Instruction("setTempValue", ["$" + n , format("call {0}", this.identifier)]));
+
+	instructionList.push(new Instruction("setTempValue", ["$" + n , format("call {0}", this.identifier.name)]));
 	instructionList.push(new Instruction("clearArgList", []));
-
-	n+=2;
-
-	return n;
+	return beforeN;
 }
 /*==============================================================*/
 /*
@@ -729,12 +730,12 @@ TSReturnStatement.prototype.printDetails = function(level)
 }
 TSReturnStatement.prototype.generateCode = function(instructionList, n)
 {
-	this.expression.generateCode(instructionList);
+	var lastN = this.expression.generateCode(instructionList) + 1;
 
 	instructionList.push(new Instruction("return", [
 														"$" + n
 												   ]));
-	return n+1;
+	return lastN;
 }
 
 /*==============================================================*/
@@ -853,9 +854,41 @@ TSForLoop.prototype.printDetails = function(level)
 		this.body.printDetails(level + 1);
 	console.log(HELPER.indentString(level, "[/TSForLoop]"));		
 }
-TSForLoop.prototype.generateCode = function(instructionList)
-{
-	// TO_DO
+TSForLoop.prototype.generateCode = function(instructionList, n)
+{	
+	instructionList.push(new Instruction("pushFrame", []));
+
+	for (var i = 0; i < this.initStatements.length; i++)
+	{
+		this.initStatements[i].generateCode(instructionList,n);
+	}
+
+	instructionList.push(new Instruction("beginLoop",[]));
+
+	var beginLoopInstrIndex  = instructionList.length - 1;
+
+	this.endExpression.generateCode(instructionList, n);
+
+	// we'll have to measure number of instructions in loop body
+	var startListLength = instructionList.length;
+
+	if (this.body != null && this.body.statements != null)
+	{
+		for (var i = 0;  i < this.body.statements.length; i++)
+		{
+			this.body.statements[i].generateCode(instructionList, n);
+		}
+	}
+
+	var endListLength = instructionList.length;
+
+	var jumpDistance = endListLength - startListLength + 2;
+
+	instructionList.splice(startListLength, 0, new Instruction("IfFalseJumpFor", [jumpDistance]));
+
+	instructionList.push(new Instruction("jumpBackTo", [beginLoopInstrIndex]));
+
+	instructionList.push(new Instruction("popFrame", []));
 }
 
 /*==============================================================*/
