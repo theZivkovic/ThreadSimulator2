@@ -413,10 +413,7 @@ TSAssignment.prototype.printDetails = function(level)
 	console.log(HELPER.indentString(level, "[TSAssignment]"));
 		
 		console.log(HELPER.indentString(level + 1, "[left side]"));
-				if (this.leftSide.getType() == "TSArrayIdentifier")
-					this.leftSide.indexExpr.printDetails(level + 2);
-				else if (this.leftSide.getType() == "TSIdentifier")
-					this.leftSide.printDetails(level+2);
+				this.leftSide.printDetails(level + 2);
 		console.log(HELPER.indentString(level + 1, "[/left side]"));
 		console.log(HELPER.indentString(level + 1, "[right side]"));
 			this.expression.printDetails(level + 2);
@@ -498,7 +495,7 @@ TSFunctionCall.prototype.toString = function()
 }
 TSFunctionCall.prototype.printDetails = function(level)
 {
-	console.log(HELPER.indentString(level, format("[TSFunctionCall] {0} ", this.name)));
+	console.log(HELPER.indentString(level, format("[TSFunctionCall] {0} ", this.identifier.name)));
 		if (this.argumentsExpressions != null)
 		{
 			for (var i = 0 ; i < this.argumentsExpressions.length; i++)
@@ -626,14 +623,26 @@ TSVariableDeclaration.prototype.printDetails = function(level)
 
 TSVariableDeclaration.prototype.generateCode = function(instructionList, n)
 {
-	lastN = this.expression.generateCode(instructionList, n);
+	if (this.expression != null)
+	{
+		lastN = this.expression.generateCode(instructionList, n) + 1;
 
-	instructionList.push(new Instruction("addVariable", [
-												this.type,
-												this.identifier,
-												"$" + n
-										]));
-	return lastN + 1;
+		instructionList.push(new Instruction("addVariable", [
+													this.type,
+													this.identifier,
+													"$" + n
+											]));
+		return lastN;
+	}
+	else
+	{
+		instructionList.push(new Instruction("addVariable", [
+													this.type,
+													this.identifier,
+													null
+											]));
+		return n;
+	}
 }
 /*==============================================================*/
 /*
@@ -809,7 +818,7 @@ TSMakeThread.prototype.printDetails = function(level)
 }
 TSMakeThread.prototype.generateCode = function(instructionList)
 {
-	// TO_DO
+	instructionList.push(new Instruction("generateThread", [this.identifier, this.func]));
 }
 /*==============================================================*/
 /*
@@ -869,8 +878,20 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 
 	this.endExpression.generateCode(instructionList, n);
 
-	// we'll have to measure number of instructions in loop body
-	var startListLength = instructionList.length;
+	// tempList is used to calculate number of steps in loop body
+
+	var tempList = [];
+
+	if (this.body != null && this.body.statements != null)
+	{
+		for (var i = 0;  i < this.body.statements.length; i++)
+		{
+			this.body.statements[i].generateCode(tempList, n);
+		}
+	}
+
+	instructionList.push(new Instruction("IfFalseJumpFor", [tempList.length + 2]));
+
 
 	if (this.body != null && this.body.statements != null)
 	{
@@ -879,12 +900,7 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 			this.body.statements[i].generateCode(instructionList, n);
 		}
 	}
-
-	var endListLength = instructionList.length;
-
-	var jumpDistance = endListLength - startListLength + 2;
-
-	instructionList.splice(startListLength, 0, new Instruction("IfFalseJumpFor", [jumpDistance]));
+	
 
 	instructionList.push(new Instruction("jumpBackTo", [beginLoopInstrIndex]));
 

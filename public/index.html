@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>ThreadingSimulator</title>
+		<title>Thread Simulator v2.0</title>
+		<script type="text/javascript" src= "libs/angular/angular.js"></script>
+		<script type="text/javascript" src= "libs/angular-route/angular-route.min.js"></script>
+
+		<script type="text/javascript" src="js/app.js"></script>
+		<script type="text/javascript" src="js/controllers/mainController.js"></script>
+
 	</head>
-	<body>
-	<h1>Hello</h1>
+	<body ng-app="ThreadSimulatorApp">
+	<h1 style="text-indent:20px">ThreadSimulator v2.0</h1>
+	<hr>
+
+	<div ng-view></div>
+
+	
 	</body>
 </html>

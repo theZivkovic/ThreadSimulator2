@@ -20,8 +20,8 @@ true|false							return 'BOOL'
 return                              return 'RETURN'
 for 								return 'FOR'
 [a-zA-Z_][a-zA-Z0-9_]*				return 'IDENTIFIER'
-[0-9]+								return 'INTEGER'
 [0-9]+\.[0-9]+						return 'DOUBLE'
+[0-9]+								return 'INTEGER'
 "=="								return 'EQUAL'
 "="									return 'ASSIGN'
 \.									return 'DOT'
@@ -72,7 +72,7 @@ program
 
 		for (var i = 0; i < instructionList.length; i++)
 		{
-		console.log(i + ": " + instructionList[i].name + "\t" + instructionList[i].args);
+		console.log(i + ": " + instructionList[i].name + " - " + instructionList[i].args);
 		}
 	}
 	;
@@ -93,17 +93,21 @@ statement
 	: variable_declaration
 	| function_declaration
 	| assign_statement
-	| expession_statement
+	| expression_statement
 	| method_call
 	| for_loop
 	;
 
-expession_statement
-	: RETURN expression
+expression_statement
+	: function_call
+	| RETURN expression
 	{
-		$$ = new AST.TSReturnStatement($2);
+		$$ = new AST.TSReturn(new AST.TSExpression($2));
 	}
-	| IDENTIFIER LBRACKET function_call_args RBRACKET
+	;
+
+function_call
+	: IDENTIFIER LBRACKET function_call_args RBRACKET
 	{
 		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), $3);
 	}
@@ -112,6 +116,7 @@ expession_statement
 		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), null);
 	}
 	;
+	
 assign_statement
 	: IDENTIFIER ASSIGN expression
 	{
@@ -217,9 +222,9 @@ expression
 	{
 		$$ = $2;
 	}
-	| IDENTIFIER LBRACKET function_call_args RBRACKET
+	| function_call
 	{
-		$$ = new AST.TSFunctionCall(new AST.TSIdentifier($1), $3);
+
 	}
 	| array_identifier
 	{
@@ -242,7 +247,7 @@ value
 	}
 	| INTEGER
 	{
-		$$ = new AST.TSDouble($1);
+		$$ = new AST.TSInteger($1);
 	}
 	| BOOL
 	{

@@ -1,25 +1,47 @@
-var AST = require("./grammar/ast");
-var INSTR = require("./grammar/instructions");
-var HELPER = require("./grammar/helper");
+// server.js
+
+// modules =================================================
+var express        = require('express');
+var app            = express();
+var bodyParser     = require('body-parser');
+var methodOverride = require('method-override');
+
+// configuration ===========================================
+    
 
 
-try
-{
-	var program  = new INSTR.TSProgram();
+// set our port
+var port = process.env.PORT || 8080; 
 
-	HELPER.checkForErrors(program.getFrame("global"));
-	HELPER.checkForErrors(program.addVariable("global", "x", {}));
-	HELPER.checkForErrors(program.addVariable("global", "y", {}));
+// connect to our mongoDB database 
+// (uncomment after you enter in your own credentials in config/db.js)
+// mongoose.connect(db.url); 
 
-	HELPER.checkForErrors(program.addFuncDecl("global", "int", "f", ["int", "int"]));
-	HELPER.checkForErrors(program.addFuncDecl("global", "int", "f1", ["int", "int"]));
+// get all data/stuff of the body (POST) parameters
+// parse application/json 
+app.use(bodyParser.json()); 
 
-	HELPER.checkForErrors(program.addFrame("main", "global"));
+// parse application/vnd.api+json as json
+app.use(bodyParser.json({ type: 'application/vnd.api+json' })); 
 
-}
-catch(e)
-{
-	console.log(e);
-}
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true })); 
 
+// override with the X-HTTP-Method-Override header in the request. simulate DELETE/PUT
+app.use(methodOverride('X-HTTP-Method-Override')); 
 
+// set the static files location /public/img will be /img for users
+app.use(express.static(__dirname + '/public')); 
+
+// routes ==================================================
+require('./app/routes')(app); // configure our routes
+
+// start app ===============================================
+// startup our app at http://localhost:8080
+app.listen(port);               
+
+// shoutout to the user                     
+console.log('Magic happens on port ' + port);
+
+// expose app           
+exports = module.exports = app;   

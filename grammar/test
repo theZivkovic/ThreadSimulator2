@@ -1,6 +1,9 @@
-int a = 1
-int b = 2 * 3
-int c = a + (b + 4) * a - 5 + 1
+thread t
+
+t = thread(main)
+
+int a = 10 + 12.0
+int b = a + 1
 
 int main()
 {
