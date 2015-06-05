@@ -1,0 +1,15 @@
+setTempValue [ $<variable_number>, <value> ]
+setVariable [ <variable_name>, <value> ]
+addVariable [ <type> <variable_name> <value>?]
+prepareArgList [] 
+clearArgList []
+addFuncDecl [ <type> <name> <args> ]  <args> has elements like { <type> <name> }
+addArrayVariable [ <type> <array_name> <size> ]
+return [ <value> ]
+generateThread [ <thread name> <func name> ]
+pushFrame []
+popFrame []
+beginLoop []
+IfFalseJumpFor [ <value> ]
+jumpBackTo [ <value> ]
+

@@ -1,28 +1,3 @@
-
-
-/*
-
-
-	  ON HOLD
-		ON HOLD
-		ON HOLD
-	ON HOLD
-		ON HOLD
-
-
-
-		
-							*/
-
-
-
-
-
-
-
-
-
-
 var format = require('string-format');
 
 /*=============================================*/
@@ -33,10 +8,32 @@ var format = require('string-format');
 
 function TSProgram()
 {
-	this.frames = [ new TSFrame("global", null) ];
+	this.frames = new Array();
+	
+	this.frames.push(new TSFrame("global", null));
 }
 
-TSProgram.prototype.addFrame = function(name, parentName)
+TSProgram.prototype.getCurrentFrame = function()
+{
+	return this.frames.peek();
+}
+
+TSProgram.prototype.popFrame = function()
+{
+	if (this.frames.length != 0)
+	{
+		this.frames.pop();
+		
+		return { code : 0};
+	}	
+	
+	return { 
+				code : -1,
+				methodName: "TSProgram.popFrame",
+				errorMessage: "Frames stack is empty, can not pop"	
+		   }
+}
+TSProgram.prototype.pushFrame = function(name, parentName)
 {
 	// check if frame with this name already exists
 
@@ -46,12 +43,12 @@ TSProgram.prototype.addFrame = function(name, parentName)
 	{
 		return {
 					code : -1,
-					methodName : "TSProgram.addFrame",
+					methodName : "TSProgram.pushFrame",
 					errorMessage: format("Frame {0} already exists in the program", name) 
 			   }
 	}
 
-	// check if parent with parentName exists
+	// check if frame with parentName exists
 
 	result = this.getFrame(parentName);
 
@@ -133,8 +130,10 @@ function TSFrame(name, parent)
 {
 	this.name = name;
 	this.parent = parent;
+	
 	this.variables = {};
-	this.functionDeclarations = {}
+	this.functionDeclarations = {};
+	this.tempVariables = {};
 }
 
 ////////////////////////////////////////////////////////
@@ -172,13 +171,36 @@ TSFrame.prototype.addVariable = function(name, variable)
 			  errorMessage: format("Can't add variable {0} to frame {1} because this var already exists in its parent frame - {2}", name, this.name, currentFrame.name)
 		   };
 }
+TSFrame.prototype.setVariable = function(name, value)
+{
+	var currentFrame = this;
 
-//////////////////////////////////////////////////////////////////
+	while (currentFrame != null)
+	{		
+		if (currentFrame.variables[name] != undefined)
+			break;
+
+		currentFrame = currentFrame.parent;
+	}
+	
+	if (currentFrame == null)
+	{
+		return {  code : -1, 
+				  methodName: "TSFrame.setVariable",
+			  	  errorMessage: format("Can't set variable {0}, because it does not exists", name);
+		   		};
+	}
+	
+	currentFrame.variables[name] = value;
+	return { code : 0 };
+	
+}
+////////////////////////////////////////////////////////////////////
 //
 //	checks arguments, returnType and existence of 
 //  this function name in this frame
 //
-///////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 TSFrame.prototype.addFuncDecl = function(returnType, name, arguments)
 {
@@ -197,11 +219,11 @@ TSFrame.prototype.addFuncDecl = function(returnType, name, arguments)
 
 		for (var i = 0 ; i < arguments.length; i++)
 		{
-			if (arguments[i] != "int" && arguments[i] != "string")
+			if (arguments[i] != "int" && arguments[i] != "string" && arguments[i] != "double")
 			return { 
 					code : -1,
 					methodName: "TSFrame.addFuncDecl",
-					errorMessage: format("Arguments must be int/string in function {0} of frame {1}", name, this.name)
+					errorMessage: format("Arguments must be int/string/double in function {0} of frame {1}", name, this.name)
 			   }
 		}
 

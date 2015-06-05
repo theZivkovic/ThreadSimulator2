@@ -1,13 +1,9 @@
-thread t
 
-t = thread(main)
-
-int a = 10 + 12.0
-int b = a + 1
 
 int main()
 {
-	
+	int x = 1
+	int y = 2
 }
 
 main()

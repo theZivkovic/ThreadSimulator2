@@ -2,8 +2,8 @@
 
 %{
 	var AST = require("./ast");
-	var ASTPARSER = require("./astParser");
 	var HELPER = require("./helper");
+	var GENERATOR = require("./instructionGenerator");
 
 	var greatBlock;
 %}
@@ -59,21 +59,18 @@ for 								return 'FOR'
 program
 	: statements EOF
 	{
-		greatBlock = $1;
-
-		greatBlock.printDetails(0);
-
+		ast = $1;
+		$1.bindWithAST(ast);
+		
+		//console.log($1.ast);
+		ast.printDetails(0);
+		
 		console.log("");
 		console.log("");
-
-		var instructionList = [];
-
-		greatBlock.generateCode(instructionList, 0);
-
-		for (var i = 0; i < instructionList.length; i++)
-		{
-		console.log(i + ": " + instructionList[i].name + " - " + instructionList[i].args);
-		}
+		
+		var generator = new GENERATOR.InstructionGenerator(ast);
+		generator.generateInstructions();
+		return ast;
 	}
 	;
 
@@ -100,6 +97,9 @@ statement
 
 expression_statement
 	: function_call
+	{
+	
+	}
 	| RETURN expression
 	{
 		$$ = new AST.TSReturn(new AST.TSExpression($2));
@@ -258,7 +258,7 @@ value
 function_declaration
 	: IDENTIFIER IDENTIFIER LBRACKET function_declaration_args RBRACKET block
 	{
-		$$ = new AST.TSFunctionDeclaration($1, $2, $4, $6);
+		$$ = new AST.TSFunctionDeclaration($1, new AST.TSIdentifier($2), $4, $6);
 	}
 	;
 

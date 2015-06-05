@@ -14,7 +14,7 @@ function Instruction(name, args)
 /*==============================================*/
 function TSNode()
 {
-
+	this.ast = null;
 }
 //////////////////////////////////////////
 //
@@ -61,32 +61,35 @@ TSNode.prototype.generateCode = function(instructionList, n)
 	return n;
 }
 
+////////////////////////////////////////////////
+//
+// Find all subnodes of node
+//
+////////////////////////////////////////////////
+TSNode.prototype.getSubNodes = function()
+{
+	return [];
+}
 
-/*=============================================*/
-/*
-/* 			TSExpression
-/*
-/*==============================================*/
-function TSExpression()
+//////////////////////////////////////////////////////
+//
+//  This method gives the Node the posibillity
+// 	to see the whole AST
+//  DO NOT OVERRIDE!
+//
+//////////////////////////////////////////////////
+TSNode.prototype.bindWithAST = function(ast)
 {
-
-}
-TSExpression.prototype = Object.create(TSNode.prototype);
-TSExpression.prototype.getType = function()
-{
-	return "TSExpression";
-}
-TSExpression.prototype.toString = function()
-{
-	return "TSExpression";
-}
-TSExpression.prototype.printDetails = function(level)
-{
-	return "";
-}
-TSExpression.prototype.generateCode = function(instructionList, n)
-{
-	return n;
+	this.ast = ast;
+	
+	for (var i = 0; i < this.getSubNodes().length; i++)
+	{
+		var subNode = this.getSubNodes()[i];
+		if (subNode == undefined)
+			continue;
+		console.log(subNode);
+		subNode.bindWithAST(ast);
+	}
 }
 
 /*=============================================*/
@@ -96,7 +99,7 @@ TSExpression.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSStatement()
 {
-
+	TSNode.call(this);
 }
 TSStatement.prototype = Object.create(TSNode.prototype);
 TSStatement.prototype.getType = function()
@@ -115,6 +118,47 @@ TSStatement.prototype.generateCode = function(instructionList, n)
 {
 	return n;
 }
+TSStatement.prototype.getSubNodes = function()
+{
+	return [];
+}
+/*==============================================================*/
+/*
+/* 			TSExpression
+/*
+/*===============================================================*/
+
+function TSExpression(expression)
+{
+	TSNode.call(this);
+	this.expression = expression;
+}
+
+TSExpression.prototype = Object.create(TSNode.prototype);
+TSExpression.prototype.getType = function()
+{
+	return "TSExpression";
+}
+TSExpression.prototype.toString = function()
+{
+	return "TSExpression";
+}
+TSExpression.prototype.printDetails = function(level)
+{
+	console.log(HELPER.indentString(level, "[TSExpression]"));
+		this.expression.printDetails(level + 1);
+	console.log(HELPER.indentString(level, "[/TSExpression]")); 
+}
+TSExpression.prototype.generateCode = function(instructionList, n)
+{
+	n = this.expression.generateCode(instructionList, n);
+
+	return n;
+}
+TSExpression.prototype.getSubNodes = function()
+{
+	return [this.expression];
+}
 /*=============================================*/
 /*
 /* 			TSInteger
@@ -122,6 +166,7 @@ TSStatement.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSInteger(value)
 {
+	TSExpression.call(this);
 	this.value = value;
 }
 TSInteger.prototype = Object.create(TSExpression.prototype);
@@ -143,6 +188,10 @@ TSInteger.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSInteger.prototype.getSubNodes = function()
+{
+	return [];
+}
 /*=============================================*/
 /*
 /* 			TSDouble
@@ -150,6 +199,7 @@ TSInteger.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSDouble(value)
 {
+	TSExpression.call(this);
 	this.value = value;
 }
 TSDouble.prototype = Object.create(TSExpression.prototype);
@@ -171,6 +221,10 @@ TSDouble.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSDouble.prototype.getSubNodes = function()
+{
+	return [];
+}
 
 /*=============================================*/
 /*
@@ -179,6 +233,7 @@ TSDouble.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSBool(value)
 {
+	TSExpression.call(this);
 	this.value = value;
 }
 TSBool.prototype = Object.create(TSExpression.prototype);
@@ -200,6 +255,10 @@ TSBool.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSBool.prototype.getSubNodes = function()
+{
+	return [];
+}
 /*=============================================*/
 /*
 /* 			TSString
@@ -207,6 +266,7 @@ TSBool.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSString(value)
 {
+	TSExpression.call(this);
 	this.value = value;
 }
 TSString.prototype = Object.create(TSExpression.prototype);
@@ -228,6 +288,10 @@ TSString.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSString.prototype.getSubNodes = function()
+{
+	return [];
+}
 
 /*=============================================*/
 /*
@@ -236,6 +300,7 @@ TSString.prototype.generateCode = function(instructionList, n)
 /*==============================================*/
 function TSObject(type)
 {
+	TSExpression.call(this);
 	this.type = type;
 }
 TSObject.prototype = Object.create(TSExpression.prototype);
@@ -255,6 +320,10 @@ TSObject.prototype.generateCode = function(instructionList, n)
 {
 	// nothing for now
 }
+TSObject.prototype.getSubNodes = function()
+{
+	return [];
+}
 /*==============================================================*/
 /*
 /* 			TSIdentifier
@@ -262,6 +331,7 @@ TSObject.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSIdentifier(name)
 {
+	TSExpression.call(this);
 	this.name = name;
 }
 TSIdentifier.prototype = Object.create(TSExpression.prototype);
@@ -283,6 +353,10 @@ TSIdentifier.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSIdentifier.prototype.getSubNodes = function()
+{
+	return [];
+}
 /*==============================================================*/
 /*
 /* 			TSArrayIdentifier
@@ -290,6 +364,7 @@ TSIdentifier.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSArrayIdentifier(name, indexExpr)
 {
+	TSExpression.call(this);
 	this.name = name;
 	this.indexExpr = indexExpr;
 }
@@ -316,6 +391,10 @@ TSArrayIdentifier.prototype.generateCode = function(instructionList, n)
 
 	return lastN;
 }
+TSIdentifier.prototype.getSubNodes = function()
+{
+	return [this.indexExpr];
+}
 /*==============================================================*/
 /*
 /* 			TSBinaryOperation
@@ -323,6 +402,7 @@ TSArrayIdentifier.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSBinaryOperation(operation, firstOperand, secondOperand)
 {
+	TSExpression.call(this);
 	this.operation = operation;
 	this.firstOperand = firstOperand;
 	this.secondOperand = secondOperand;
@@ -353,6 +433,10 @@ TSBinaryOperation.prototype.generateCode = function(instructionList, n)
 
 	return afterRightN;
 }
+TSIdentifier.prototype.getSubNodes = function()
+{
+	return [this.firstOperand, this.secondOperand];
+}
 /*==============================================================*/
 /*
 /* 			TSBlock
@@ -360,9 +444,10 @@ TSBinaryOperation.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSBlock(statements)
 {
+	TSStatement.call(this);
 	this.statements = statements;
 }
-TSBlock.prototype = Object.create(TSExpression.prototype);
+TSBlock.prototype = Object.create(TSStatement.prototype);
 TSBlock.prototype.getType = function()
 {
 	return "TSBlock";
@@ -388,6 +473,14 @@ TSBlock.prototype.generateCode = function(instructionList, n)
 	}
 	return n;
 }
+TSBlock.prototype.getSubNodes = function()
+{
+	var result = [];
+	
+	for (var i = 0; i < this.statements.length; i++)
+		result.push(this.statements[i]);
+	return result;
+}
 /*==============================================================*/
 /*
 /* 			TSAssignment
@@ -395,6 +488,7 @@ TSBlock.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSAssignment(leftSide, expression)
 {
+	TSExpression.call(this);
 	this.leftSide = leftSide;
 	this.expression = expression;
 }
@@ -430,9 +524,9 @@ TSAssignment.prototype.generateCode = function(instructionList, n)
 		lastNN = this.leftSide.indexExpr.generateCode(instructionList, lastN) + 1;
 
 		instructionList.push(new Instruction("setArrayVariable", [
-																		this.leftSide.name,
-																		"$" + lastN,
-																		"$" + n																 ]));
+									this.leftSide.name,
+									"$" + lastN,
+									"$" + n]));
 		return lastNN;
 	}
 	else if (this.leftSide.getType() == "TSIdentifier")
@@ -440,39 +534,11 @@ TSAssignment.prototype.generateCode = function(instructionList, n)
 		instructionList.push(new Instruction("setVariable", [this.leftSide.name, "$" + n]));
 	}
 }
-
-/*==============================================================*/
-/*
-/* 			TSExpression
-/*
-/*===============================================================*/
-
-function TSExpression(expression)
+TSAssignment.prototype.getSubNodes = function()
 {
-	this.expression = expression;
+	return [this.leftSide, this.expression];
 }
 
-TSExpression.prototype = Object.create(TSExpression.prototype);
-TSExpression.prototype.getType = function()
-{
-	return "TSExpression";
-}
-TSExpression.prototype.toString = function()
-{
-	return "TSExpression";
-}
-TSExpression.prototype.printDetails = function(level)
-{
-	console.log(HELPER.indentString(level, "[TSExpression]"));
-		this.expression.printDetails(level + 1);
-	console.log(HELPER.indentString(level, "[/TSExpression]")); 
-}
-TSExpression.prototype.generateCode = function(instructionList, n)
-{
-	n = this.expression.generateCode(instructionList, n);
-
-	return n;
-}
 /*==============================================================*/
 /*
 /* 			TSFunctionCall
@@ -480,6 +546,7 @@ TSExpression.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSFunctionCall(identifier, argumentsExpressions)
 {
+	TSExpression.call(this);
 	this.identifier = identifier;
 	this.argumentsExpressions = argumentsExpressions;
 }
@@ -519,17 +586,28 @@ TSFunctionCall.prototype.generateCode = function(instructionList, n)
 			lastN = this.argumentsExpressions[i].generateCode(instructionList, beforeN) + 1;
 
 			instructionList.push(new Instruction("setArgListValue", [
-																		 i,
-																		 "$" + beforeN
-																	 ]));
+										 i,
+										 "$" + beforeN
+									 	]));
 			beforeN = lastN;
-
 		}
 	}
 
 	instructionList.push(new Instruction("setTempValue", ["$" + n , format("call {0}", this.identifier.name)]));
 	instructionList.push(new Instruction("clearArgList", []));
+	
 	return beforeN;
+}
+TSExpression.prototype.getSubNodes = function()
+{
+	var result = [this.identifier];
+	
+	if (this.argumentExpressions == null)
+		return result;
+		
+	for (var i = 0 ; i < this.argumentsExpressions.length; i++)
+		result.push(this.argumentsExpressions[i]);
+	return result;
 }
 /*==============================================================*/
 /*
@@ -539,6 +617,7 @@ TSFunctionCall.prototype.generateCode = function(instructionList, n)
 
 function TSFunctionDeclaration(type, identifier, arguments, block)
 {
+	TSStatement.call(this);
 	this.type = type;
 	this.identifier = identifier;
 	this.arguments = arguments;
@@ -590,6 +669,17 @@ TSFunctionDeclaration.prototype.generateCode = function(instructionList, n)
 
 	return n;
 }
+TSFunctionDeclaration.prototype.getSubNodes = function()
+{
+	var result = [this.identifier];
+	
+	for (var i = 0 ; i < this.arguments.length; i++)
+		result.push(this.arguments[i]);
+		
+	result.push(this.block);
+	
+	return result;
+}
 /*==============================================================*/
 /*
 /* 			TSVariableDeclaration
@@ -598,6 +688,7 @@ TSFunctionDeclaration.prototype.generateCode = function(instructionList, n)
 
 function TSVariableDeclaration(type, identifier, expression)
 {
+	TSStatement.call(this);
 	this.type = type;
 	this.identifier = identifier;
 	this.expression = expression;
@@ -625,7 +716,7 @@ TSVariableDeclaration.prototype.generateCode = function(instructionList, n)
 {
 	if (this.expression != null)
 	{
-		lastN = this.expression.generateCode(instructionList, n) + 1;
+		var lastN = this.expression.generateCode(instructionList, n) + 1;
 
 		instructionList.push(new Instruction("addVariable", [
 													this.type,
@@ -644,6 +735,10 @@ TSVariableDeclaration.prototype.generateCode = function(instructionList, n)
 		return n;
 	}
 }
+TSVariableDeclaration.prototype.getSubNodes = function()
+{
+	return [this.identifier, this.expression];
+}
 /*==============================================================*/
 /*
 /* 			TSArrayDeclaration
@@ -652,6 +747,7 @@ TSVariableDeclaration.prototype.generateCode = function(instructionList, n)
 
 function TSArrayVariableDeclaration(type, identifier, sizeExpr)
 {
+	TSStatement.call(this);
 	this.type = type;
 	this.identifier = identifier;
 	this.sizeExpr = sizeExpr;
@@ -681,7 +777,10 @@ TSArrayVariableDeclaration.prototype.generateCode = function(instructionList, n)
 															 ]));
 	return n + 1;
 }
-
+TSArrayVariableDeclaration.prototype.getSubNodes = function()
+{
+	return [this.identifier, this.sizeExpr];
+}
 /*==============================================================*/
 /*
 /* 			TSExpressionStatement
@@ -690,6 +789,7 @@ TSArrayVariableDeclaration.prototype.generateCode = function(instructionList, n)
 
 function TSExpressionStatement(expression)
 {
+	TSStatement.call(this);
 	this.expression = expression;
 }
 TSExpressionStatement.prototype = Object.create(TSStatement.prototype);
@@ -711,6 +811,10 @@ TSExpressionStatement.prototype.generateCode = function(instructionList, n)
 {
 	// nothing for now
 }
+TSArrayVariableDeclaration.prototype.getSubNodes = function()
+{
+	return [this.expression];
+}
 
 /*==============================================================*/
 /*
@@ -720,6 +824,7 @@ TSExpressionStatement.prototype.generateCode = function(instructionList, n)
 
 function TSReturnStatement(expression)
 {
+	TSStatement.call(this);
 	this.expression = expression;
 }
 TSReturnStatement.prototype = Object.create(TSStatement.prototype);
@@ -746,6 +851,10 @@ TSReturnStatement.prototype.generateCode = function(instructionList, n)
 												   ]));
 	return lastN;
 }
+TSReturnStatement.prototype.getSubNodes = function()
+{
+	return [this.expression];
+}
 
 /*==============================================================*/
 /*
@@ -754,6 +863,7 @@ TSReturnStatement.prototype.generateCode = function(instructionList, n)
 /*===============================================================*/
 function TSMethodCall(identifier, methodName, arguments)
 {
+	TSStatement.call(this);
 	this.identifier = identifier;
 	this.arguments = arguments;
 	this.methodName = methodName;
@@ -791,6 +901,16 @@ TSMethodCall.prototype.generateCode = function(instructionList)
 {
 	// TO_DO	
 }
+TSMethodCall.prototype.getSubNodes = function()
+{
+	var result = [this.identifier];
+	
+	for (var i = 0; i < this.arguments.length; i++)
+	{
+		result.push(this.arguments[i]);
+	}
+	return result;
+}
 
 /*==============================================================*/
 /*
@@ -800,6 +920,7 @@ TSMethodCall.prototype.generateCode = function(instructionList)
 
 function TSMakeThread(identifier, func)
 {
+	TSStatement.call(this);
 	this.identifier = identifier;
 	this.func = func;
 }
@@ -820,6 +941,10 @@ TSMakeThread.prototype.generateCode = function(instructionList)
 {
 	instructionList.push(new Instruction("generateThread", [this.identifier, this.func]));
 }
+TSMakeThread.prototype.getSubNodes = function()
+{
+	return [this.identifier];
+}
 /*==============================================================*/
 /*
 /* 			TSForLoop
@@ -828,6 +953,7 @@ TSMakeThread.prototype.generateCode = function(instructionList)
 
 function TSForLoop(initStatements, endExpression, stepStatements, body)
 {
+	TSStatement.call(this);
 	this.initStatements = initStatements;
 	this.endExpression = endExpression;
 	this.stepStatements = stepStatements
@@ -906,7 +1032,21 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 
 	instructionList.push(new Instruction("popFrame", []));
 }
-
+TSForLoop.prototype.getSubNodes = function()
+{
+	var result = [];
+	
+	for (var i =0 ; i < this.statements.length; i++)
+		result.push(this.initStatements[i]);
+	
+	for (var i =0 ; i < this.endExpression.length; i++)
+		result.push(this.endExpression[i]);
+		
+	for (var i =0 ; i < this.stepStatements.length; i++)
+		result.push(this.stepStatements[i]);
+		
+	result.push(this.body);
+}
 /*==============================================================*/
 /*
 /* 			EXPORTS
