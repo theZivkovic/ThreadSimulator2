@@ -14,7 +14,7 @@ function Instruction(name, args)
 /*==============================================*/
 function TSNode()
 {
-	this.ast = null;
+	
 }
 //////////////////////////////////////////
 //

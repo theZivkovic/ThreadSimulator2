@@ -60,7 +60,6 @@ program
 	: statements EOF
 	{
 		ast = $1;
-		$1.bindWithAST(ast);
 		
 		//console.log($1.ast);
 		ast.printDetails(0);

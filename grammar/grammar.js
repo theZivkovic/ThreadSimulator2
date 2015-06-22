@@ -86,7 +86,6 @@ switch (yystate) {
 case 1:
 
 		ast = $$[$0-1];
-		$$[$0-1].bindWithAST(ast);
 		
 		//console.log($$[$0-1].ast);
 		ast.printDetails(0);

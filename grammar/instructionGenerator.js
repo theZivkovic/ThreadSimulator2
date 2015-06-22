@@ -16,41 +16,40 @@ function InstructionGenerator(ast)
 	this.ast = ast;
 }
 
-InstructionGenerator.prototype.generateInstructions = function()
+//////////////////////////////////////////////////////////////////////////////////////
+//
+//	Genereate code for specific function call
+//
+///////////////////////////////////////////////////////////////////////////////////////
+InstructionGenerator.prototype.generateInstructionsForFunctionCall = function(funcName)
 {
-	var instructionList = new Array();
-	
-	// first, generate instructions on the global level
-	
-	this.ast.generateCode(instructionList, 0);
-	
-	// find main and generate its code
-	
-	var mainDecl = null;
+	var funcDecl = null;
 	
 	for (var i = 0 ; i < this.ast.statements.length; i++)
 	{
+	
 		var stmt = this.ast.statements[i];
-		if (stmt.getType() == "TSFunctionDeclaration" && stmt.identifier.name == "main")
-		{
-			mainDecl = stmt;		
+		
+		if (stmt.getType() == "TSFunctionDeclaration" && stmt.identifier.name == funcName)
+		{		
+			funcDecl = stmt;
 			break;
 		}
 	}
 	
-	if (mainDecl == null)
-		return {
-					code: -1,
-					methodName: "InstructionGenerator.generateInstructions",
-					errorMessage: "Main does not exists"
-		       }
+	if (funcDecl == null)
+	{
+		throw "" + funcName + " does not exists";
+	}
 	
-	console.log(mainDecl.block);
-	mainDecl.block.generateCode(instructionList, 0);
+	var resultList = [];
 	
-	console.log(instructionList);
+	for (var i = 0; i < funcDecl.block.statements.length; i++)
+	{
+		funcDecl.block.statements[i].generateCode(resultList, 0);
+	}
 	
-	return { code : 0};
+	return resultList;
 }
 
 
