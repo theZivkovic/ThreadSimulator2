@@ -93,9 +93,10 @@ case 1:
 		console.log("");
 		console.log("");
 		
-		var generator = new GENERATOR.InstructionGenerator(ast);
-		generator.generateInstructions();
-		return ast;
+		var instructionList = [];
+		ast.generateCodeDetailed(instructionList, 0, ast);
+		
+		console.log(instructionList);
 	
 break;
 case 2:
