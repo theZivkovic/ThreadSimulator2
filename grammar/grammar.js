@@ -117,7 +117,7 @@ case 10:
 break;
 case 11:
 
-		this.$ = new AST.TSReturn(new AST.TSExpression($$[$0]));
+		this.$ = new AST.TSReturnStatement(new AST.TSExpression($$[$0]));
 	
 break;
 case 12:

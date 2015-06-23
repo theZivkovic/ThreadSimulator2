@@ -102,7 +102,7 @@ expression_statement
 	}
 	| RETURN expression
 	{
-		$$ = new AST.TSReturn(new AST.TSExpression($2));
+		$$ = new AST.TSReturnStatement(new AST.TSExpression($2));
 	}
 	;
 

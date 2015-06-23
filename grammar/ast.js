@@ -504,7 +504,11 @@ TSBlock.prototype.generateCode = function(instructionList, n)
 }
 TSBlock.prototype.generateCodeDetailed = function(instructionList, n, ast)
 {
-	return this.generateCode(instructionList, n);
+	for (var i = 0; i < this.statements.length; i++)
+	{
+		this.statements[i].generateCodeDetailed(instructionList, n, ast);
+	}
+	return n;
 }
 TSBlock.prototype.getSubNodes = function()
 {
@@ -659,7 +663,7 @@ TSFunctionCall.prototype.generateCodeDetailed = function(instructionList, n, ast
 		}
 	}
 	
-	// add function body
+	// found the function declaration
 	
 	var funcDecl = null;
 	
@@ -674,17 +678,29 @@ TSFunctionCall.prototype.generateCodeDetailed = function(instructionList, n, ast
 		}
 	}
 	
-	for (var i = 0; i < funcDecl.block.statements.length; i++)
+	if (funcDecl == null) throw "Can't find function " + this.identifier.name;
+
+	// fill the stack with arguments
+	
+	for (var i = 0; i < funcDecl.arguments.length; i++)
 	{
-		funcDecl.block.statements[i].generateCode(instructionList, n);
+		var argument = funcDecl.arguments[i];
+		
+		instructionList.push(new Instruction("addVariable", [
+				argument.type,
+				argument.identifier,
+				"argList[" + i + 1+"]"]));
+		
 	}
+
+	lastN = funcDecl.block.generateCodeDetailed(instructionList, lastN, ast) + 1;
 	
 	// clear
 	
 	instructionList.push(new Instruction("setTempValue", ["$" + n , format("call {0}", this.identifier.name)]));
 	instructionList.push(new Instruction("clearArgList", []));
 	
-	return n;
+	return lastN;
 }
 TSFunctionCall.prototype.getSubNodes = function()
 {
@@ -746,14 +762,17 @@ TSFunctionDeclaration.prototype.generateCode = function(instructionList, n)
 							name: currentArg.identifier
 					  });	
 	}
-
+	
 	// make instruction
-	instructionList.push(new Instruction("addFuncDecl", [ 
+	instructionList.push(new Instruction("beginFuncDecl", [ 
 															this.type,
 															this.identifier,
 															arguments
 
 														  ]));
+	this.block.generateCode(instructionList, n);
+														  
+	instructionList.push(new Instruction("endFuncDecl", [ ]));											
 
 	return n;
 }
@@ -948,7 +967,7 @@ TSReturnStatement.prototype.printDetails = function(level)
 }
 TSReturnStatement.prototype.generateCode = function(instructionList, n)
 {
-	var lastN = this.expression.generateCode(instructionList) + 1;
+	var lastN = this.expression.generateCode(instructionList, n) + 1;
 
 	instructionList.push(new Instruction("return", [
 														"$" + n
@@ -1116,8 +1135,12 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 
 	instructionList.push(new Instruction("beginLoop",[]));
 
-	var beginLoopInstrIndex  = instructionList.length - 1;
+	// tempEnd is is used to calculate number of steps in end expression
+	
+	var tempEnd = [];
 
+	this.endExpression.generateCode(tempEnd, n);
+	
 	this.endExpression.generateCode(instructionList, n);
 
 	// tempList is used to calculate number of steps in loop body
@@ -1131,6 +1154,8 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 			this.body.statements[i].generateCode(tempList, n);
 		}
 	}
+	
+	
 
 	instructionList.push(new Instruction("IfFalseJumpFor", [tempList.length + 2]));
 
@@ -1144,7 +1169,7 @@ TSForLoop.prototype.generateCode = function(instructionList, n)
 	}
 	
 
-	instructionList.push(new Instruction("jumpBackTo", [beginLoopInstrIndex]));
+	instructionList.push(new Instruction("jumpBackFor", [tempList.length + 2 + tempEnd.length]));
 
 	instructionList.push(new Instruction("popFrame", []));
 }
