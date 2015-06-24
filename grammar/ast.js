@@ -766,10 +766,20 @@ TSFunctionDeclaration.prototype.generateCode = function(instructionList, n)
 	// make instruction
 	instructionList.push(new Instruction("beginFuncDecl", [ 
 															this.type,
-															this.identifier,
-															arguments
-
+															this.identifier.name
 														  ]));
+														  
+	// add args as local variables
+	
+	for (var i = 0; i < this.arguments.length; i++)
+	{
+		instructionList.push(new Instruction("addVariable", [
+													this.arguments[i].type,
+													this.arguments[i].identifier,
+													"argList[" + i + "]"
+											]));	
+	}
+	
 	this.block.generateCode(instructionList, n);
 														  
 	instructionList.push(new Instruction("endFuncDecl", [ ]));											
@@ -883,7 +893,7 @@ TSArrayVariableDeclaration.prototype.printDetails = function(level)
 }
 TSArrayVariableDeclaration.prototype.generateCode = function(instructionList, n)
 {
-	this.sizeExpr.generateCode(instructionList);
+	this.sizeExpr.generateCode(instructionList, n);
 
 	instructionList.push(new Instruction("addArrayVariable", [
 																this.type,

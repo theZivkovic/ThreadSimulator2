@@ -1,4 +1,4 @@
-// server.js
+/*// server.js
 
 // modules =================================================
 var express        = require('express');
@@ -45,3 +45,9 @@ console.log('Magic happens on port ' + port);
 
 // expose app           
 exports = module.exports = app;   
+*/
+
+var VARIABLES = require('./grammar/variables');
+
+var a = new VARIABLES.Variable("int","$0",1);
+console.log(a.isValid());

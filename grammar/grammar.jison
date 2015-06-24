@@ -183,7 +183,7 @@ variable_declaration
 	{
 		$$ = new AST.TSVariableDeclaration($1, $2, new AST.TSExpression($4));
 	}
-	| IDENTIFIER IDENTIFIER LSHARPBRACKET INTEGER RSHARPBRACKET
+	| IDENTIFIER IDENTIFIER LSHARPBRACKET expression RSHARPBRACKET
 	{
 		$$ = new AST.TSArrayVariableDeclaration($1, $2, $4)
 	}
